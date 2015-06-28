@@ -1,7 +1,6 @@
 package com.example;
 
 import org.msgpack.jackson.dataformat.MessagePackFactory;
-import org.msgpack.value.Value;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,7 +15,7 @@ public class Main {
     byte[] bytes = objectMapper.writeValueAsBytes(orig);
     PojoContainer value = objectMapper.readValue(bytes, PojoContainer.class);
 
-    System.out.println("Recap: object2map");
+    System.out.println("Recap: basicUsage");
     System.out.println("\t" + orig);
     System.out.println("\t" + value);
     System.out.println();
