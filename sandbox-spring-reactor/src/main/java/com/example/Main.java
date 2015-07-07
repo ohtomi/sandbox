@@ -5,7 +5,7 @@ import reactor.rx.broadcast.Broadcaster;
 
 public class Main {
 
-	private static void helloWorld() throws InterruptedException {
+	private static void helloWorld() {
 		System.out.println("\n--- helloWorld ---\n");
 
 		Environment.initialize();
