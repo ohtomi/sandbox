@@ -8,9 +8,7 @@
   },
   "author": "Kenichi Ohtomi",
   "license": "MIT",
-  "dependencies": {
-    "glob": "^5.0.13"
-  },
+  "dependencies": {},
   "devDependencies": {
     "electron-prebuilt": "^0.29.2"
   }
