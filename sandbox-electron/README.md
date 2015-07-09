@@ -7,6 +7,7 @@ A sample Electron application.
 ## Requirements
 
 - node.js v0.10.x
+- jagrid (https://github.com/kawasima/jagrid)
 
 ## Usage
 

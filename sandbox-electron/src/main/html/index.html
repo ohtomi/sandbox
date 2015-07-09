@@ -1,11 +1,42 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
     <title>Hello World!</title>
+    <link href="../css/jagrid.css" rel="stylesheet" />
   </head>
   <body>
     <h1>Hello World!</h1>
-    We are using io.js <script>document.write(process.version)</script>
-    and Electron <script>document.write(process.versions['electron'])</script>
+    <div class="jagrid" style="width: 2000px; height: 2020px;">
+      <div data-x="4" data-y="2">
+        We are using io.js <script>document.write(process.version)</script>
+        and Electron <script>document.write(process.versions['electron'])</script>
+      </div>
+      <div data-x="4" data-y="5">
+        <input type="text" name="x" value="hello" />
+        <br />
+        入力コントロールの大きさは指定できない?
+      </div>
+      <div data-x="4" data-y="8">
+        <table>
+          <thead>
+            <tr>
+              <th class="title" data-width="4">ラベル-1</th>
+              <th class="title" data-width="6">ラベル-2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-width="10">長いデータです。文末が見えません。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div data-x="4" data-y="11">
+        横幅は 20px * セル数、縦幅は 20px * (セル数 + 1)とするとよい。
+      </div>
+    </div>
     <script src="../js/browser/index.js"></script>
+    <script src="../js/browser/jagrid.js"></script>
   </body>
 </html>
