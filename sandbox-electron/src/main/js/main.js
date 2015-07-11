@@ -17,11 +17,14 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 800, heigth: 600});
+  mainWindow = new BrowserWindow({width: 800, height: 1000});
   mainWindow.loadUrl('file://' + __dirname + '/../html/index.html');
   mainWindow.openDevTools();
   mainWindow.on('closed', function() {
     mainWindow = null;
+  });
+  mainWindow.webContents.on('will-navigate', function(e) {
+    e.preventDefault();
   });
 });
 
