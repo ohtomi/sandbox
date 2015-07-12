@@ -4,32 +4,16 @@
 'use strict';
 
 var React = require('react');
+var ExcelStore = require('../store/ExcelStore.js');
 var ExcelToolbar = require('./ExcelToolbar.js');
 var ExcelTable = require('./ExcelTable.js');
 var misc = require('../misc.js');
-
-var cells = [
-  { x: 1, y: 2, label: misc.buildCellLabel(1, 2), func: null, value: 'We are using ...' },
-  { x: 2, y: 5, label: misc.buildCellLabel(2, 5),
-    func: misc.buildFormulaJsFunction(misc.parseExcelFunction('if(true, "xxx", abs(3))')),
-    value: '=if(true, "xxx", abs(3))' }
-];
-
-function findCell(x, y) {
-  for (var i = 0; i < cells.length; i++) {
-    var cell = cells[i];
-    if (cell.x === x && cell.y === y) {
-      return cell;
-    }
-  }
-  return null;
-}
 
 var ExcelView = React.createClass({
 
   getInitialState: function() {
     return {
-      cells: cells,
+      cells: ExcelStore.getAllCells(),
       activeCell: {
         x: 0,
         y: 0,
@@ -41,7 +25,7 @@ var ExcelView = React.createClass({
   },
 
   handleMouseClick: function(x, y) {
-    var cell = findCell(x, y);
+    var cell = ExcelStore.getCell(x, y);
     if (cell) {
       this.setState({activeCell: cell});
     } else {
@@ -58,11 +42,12 @@ var ExcelView = React.createClass({
   },
 
   handleInput: function(value) {
-    var cell = findCell(this.state.activeCell.x, this.state.activeCell.y);
+    var cell = ExcelStore.getCell(this.state.activeCell.x, this.state.activeCell.y);
     if (cell) {
       cell.value = value;
       cell.func = value.startsWith('=') ? misc.buildFormulaJsFunction(misc.parseExcelFunction(value.slice(1))) : null;
-      this.setState({cells: cells});
+      ExcelStore.updateCell(cell);
+      this.setState({cells: ExcelStore.getAllCells()});
     } else {
       cell = {
         x: this.state.activeCell.x,
@@ -71,8 +56,8 @@ var ExcelView = React.createClass({
         func: value.startsWith('=') ? misc.buildFormulaJsFunction(misc.parseExcelFunction(value.slice(1))) : null,
         value: value
       };
-      cells.push(cell);
-      this.setState({cells: cells});
+      ExcelStore.updateCell(cell);
+      this.setState({cells: ExcelStore.getAllCells()});
     }
 
     this.setState({activeCell: cell});

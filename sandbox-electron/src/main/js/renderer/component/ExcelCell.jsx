@@ -4,7 +4,6 @@
 'use strict';
 
 var React = require('react');
-var misc = require('../misc.js');
 
 var ExcelCell = React.createClass({
 
