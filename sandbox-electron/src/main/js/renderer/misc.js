@@ -13,6 +13,13 @@ function captureThisWindow() {
   });
 }
 
+function parseCellLabel(label) {
+  return {
+    x: 1,
+    y: 1
+  };
+}
+
 function buildCellLabel(x, y) {
   var s = '';
   x += 1;
@@ -511,6 +518,11 @@ function parseExcelFunction(func) {
   return parser.parse(func).value;
 }
 
+function buildCellReference(label) {
+  var position = parseCellLabel(label);
+  return 'ExcelStore.getCell(' + position.x + ',' + position.y + ')';
+}
+
 function buildFunctionFromTokens(tokens) {
   if (!tokens) {
     return '';
@@ -521,6 +533,17 @@ function buildFunctionFromTokens(tokens) {
     var token = tokens[i];
     if (token.type === 'function') {
       func += 'formulajs.' + token.value[0].toUpperCase() + '( ' + buildFunctionFromTokens(token.value[1]) + ' )';
+    } else if (token.type === 'reference') {
+      var refFunc = buildCellReference(token.value);
+      func += '(';
+      func += '  ' + refFunc + ' ? ';
+      func += '    (';
+      func += '      ' + refFunc + '.func ?';
+      func += '        ' + refFunc + '.func(ExcelStore)';
+      func += '      : ' + refFunc + '.value';
+      func += '    )';
+      func += '  : ""';
+      func += ')';
     } else {
       func += token.value;
     }
@@ -532,7 +555,7 @@ function buildFormulaJsFunction(tokens) {
   if (!tokens) {
     return null;
   }
-  return new Function('return ' + buildFunctionFromTokens(tokens));
+  return new Function('ExcelStore', 'return ' + buildFunctionFromTokens(tokens));
 }
 
 module.exports = {
