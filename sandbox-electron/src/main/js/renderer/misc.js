@@ -14,9 +14,17 @@ function captureThisWindow() {
 }
 
 function parseCellLabel(label) {
+  var xLabel = label.match(/[a-z]+/i)[0];
+  var yLabel = label.match(/[0-9]+/i)[0];
+  var x = 0;
+  for (var i = 0; i < xLabel.split('').length; i++) {
+    x *= 26;
+    x += xLabel.split('')[i].toUpperCase().charCodeAt() - 64;
+  }
+  var y = parseInt(yLabel, 10);
   return {
-    x: 1,
-    y: 1
+    x: x - 1,
+    y: y - 1
   };
 }
 
@@ -520,7 +528,17 @@ function parseExcelFunction(func) {
 
 function buildCellReference(label) {
   var position = parseCellLabel(label);
-  return 'ExcelStore.getCell(' + position.x + ',' + position.y + ')';
+  var func = '';
+  func += '(';
+  func += '  ExcelStore.getCell(' + position.x + ',' + position.y + ') ? ';
+  func += '    (';
+  func += '      ExcelStore.getCell(' + position.x + ',' + position.y + ').func ?';
+  func += '        ExcelStore.getCell(' + position.x + ',' + position.y + ').func(ExcelStore)';
+  func += '      : ExcelStore.getCell(' + position.x + ',' + position.y + ').value';
+  func += '    )';
+  func += '  : ""';
+  func += ')';
+  return func;
 }
 
 function buildFunctionFromTokens(tokens) {
@@ -534,16 +552,7 @@ function buildFunctionFromTokens(tokens) {
     if (token.type === 'function') {
       func += 'formulajs.' + token.value[0].toUpperCase() + '( ' + buildFunctionFromTokens(token.value[1]) + ' )';
     } else if (token.type === 'reference') {
-      var refFunc = buildCellReference(token.value);
-      func += '(';
-      func += '  ' + refFunc + ' ? ';
-      func += '    (';
-      func += '      ' + refFunc + '.func ?';
-      func += '        ' + refFunc + '.func(ExcelStore)';
-      func += '      : ' + refFunc + '.value';
-      func += '    )';
-      func += '  : ""';
-      func += ')';
+      func += buildCellReference(token.value);
     } else {
       func += token.value;
     }
