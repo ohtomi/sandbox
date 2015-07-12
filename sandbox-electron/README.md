@@ -7,15 +7,19 @@ A sample Electron application.
 ## Requirements
 
 - node.js v0.10.x
+- react 0.13.3
 - jagrid (https://github.com/kawasima/jagrid)
 
 ## Usage
 
 ```
 $ npm run
-Available scripts in the sandbox-electron package:
-  start
-    electron .
+build
+  jsx -x jsx src/main/js/renderer/components src/main/js/renderer/components
+watch
+  jsx -wx jsx src/main/js/renderer/components src/main/js/renderer/components
+start
+  electron .
 
 ```
 
