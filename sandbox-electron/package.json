@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/main/js/main.js",
   "scripts": {
-    "build": "jsx -x jsx src/main/js/renderer/components src/main/js/renderer/components",
-    "watch": "jsx -wx jsx src/main/js/renderer/components src/main/js/renderer/components",
+    "build": "jsx -x jsx src/main/js/renderer/component src/main/js/renderer/component",
+    "watch": "jsx -wx jsx src/main/js/renderer/component src/main/js/renderer/component",
     "start": "electron ."
   },
   "author": "Kenichi Ohtomi",

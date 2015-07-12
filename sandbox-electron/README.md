@@ -8,6 +8,8 @@ A sample Electron application.
 
 - node.js v0.10.x
 - react 0.13.3
+- parsimmon 0.7.0
+- formulajs (https://github.com/sutoiku/formula.js)
 - jagrid (https://github.com/kawasima/jagrid)
 
 ## Usage
@@ -15,9 +17,9 @@ A sample Electron application.
 ```
 $ npm run
 build
-  jsx -x jsx src/main/js/renderer/components src/main/js/renderer/components
+  jsx -x jsx src/main/js/renderer/component src/main/js/renderer/component
 watch
-  jsx -wx jsx src/main/js/renderer/components src/main/js/renderer/components
+  jsx -wx jsx src/main/js/renderer/component src/main/js/renderer/component
 start
   electron .
 
