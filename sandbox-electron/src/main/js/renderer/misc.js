@@ -13,8 +13,20 @@ function captureThisWindow() {
   });
 }
 
+function buildCellLabel(x, y) {
+  var s = '';
+  x += 1;
+  while (x > 0) {
+    s = String.fromCharCode((x - 1) % 26 + 65) + s;
+    x = Math.floor((x - 1) / 26);
+  }
+  s = s + (y + 1);
+  return s;
+}
+
 module.exports = {
-  captureThisWindow: captureThisWindow
+  captureThisWindow: captureThisWindow,
+  buildCellLabel: buildCellLabel
 };
 
 })();
