@@ -15,7 +15,7 @@ var ExcelToolbar = React.createClass({
     return (
       <div style={{width: '100%', marginTop: '2px', marginBottom: '2px'}}>
         <input type="text" style={{width: '10%'}} value={this.props.activeCell.label} readOnly />
-        {' fx'}
+        {' fx '}
         <input type="text" style={{width: '80%'}} value={this.props.activeCell.value} onChange={this.handleInput} />
       </div>
     );

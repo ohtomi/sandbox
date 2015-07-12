@@ -10,7 +10,9 @@ var misc = require('../misc.js');
 
 var cells = [
   { x: 1, y: 2, label: misc.buildCellLabel(1, 2), func: null, value: 'We are using ...' },
-  { x: 2, y: 5, label: misc.buildCellLabel(2, 5), func: '=B3', value: '=B3' }
+  { x: 2, y: 5, label: misc.buildCellLabel(2, 5),
+    func: misc.buildFormulaJsFunction(misc.parseExcelFunction('if(true, "xxx", abs(3))')),
+    value: '=if(true, "xxx", abs(3))' }
 ];
 
 function findCell(x, y) {
@@ -28,7 +30,13 @@ var ExcelView = React.createClass({
   getInitialState: function() {
     return {
       cells: cells,
-      activeCell: {x: 0, y: 0, label: misc.buildCellLabel(0, 0), func: null, value: ''}
+      activeCell: {
+        x: 0,
+        y: 0,
+        label: misc.buildCellLabel(0, 0),
+        func: null,
+        value: ''
+      }
     };
   },
 
@@ -37,7 +45,15 @@ var ExcelView = React.createClass({
     if (cell) {
       this.setState({activeCell: cell});
     } else {
-      this.setState({activeCell: {x: x, y: y, label: misc.buildCellLabel(x, y), func: null, value: ''}});
+      this.setState({
+        activeCell: {
+          x: x,
+          y: y,
+          label: misc.buildCellLabel(x, y),
+          func: null,
+          value: ''
+        }
+      });
     }
   },
 
@@ -45,28 +61,21 @@ var ExcelView = React.createClass({
     var cell = findCell(this.state.activeCell.x, this.state.activeCell.y);
     if (cell) {
       cell.value = value;
+      cell.func = value.startsWith('=') ? misc.buildFormulaJsFunction(misc.parseExcelFunction(value.slice(1))) : null;
       this.setState({cells: cells});
     } else {
       cell = {
         x: this.state.activeCell.x,
         y: this.state.activeCell.y,
         label: misc.buildCellLabel(this.state.activeCell.x, this.state.activeCell.y),
-        func: null,
+        func: value.startsWith('=') ? misc.buildFormulaJsFunction(misc.parseExcelFunction(value.slice(1))) : null,
         value: value
       };
       cells.push(cell);
       this.setState({cells: cells});
     }
 
-    this.setState({
-      activeCell: {
-        x: this.state.activeCell.x,
-        y: this.state.activeCell.y,
-        label: misc.buildCellLabel(this.state.activeCell.x, this.state.activeCell.y),
-        func: null,
-        value: value
-      }
-    });
+    this.setState({activeCell: cell});
   },
 
   render: function() {

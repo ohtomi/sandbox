@@ -11,6 +11,7 @@
   "author": "Kenichi Ohtomi",
   "license": "MIT",
   "dependencies": {
+    "parsimmon": "^0.7.0",
     "react": "^0.13.3"
   },
   "devDependencies": {
