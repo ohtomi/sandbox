@@ -50,8 +50,8 @@ function parseExcelFunction(func) {
 
   var ref = regex(/[a-z]+[0-9]+/i)
     .map(function(n) { return {type:'reference', value: n}; });
-  var num = alt(regex(/-?[1-9][0-9]*/), regex(/0\.[0-9]+/))
-    .map(function(n) { return {type: 'num', value: parseInt(n, 10)}; });
+  var num = alt(regex(/-?[1-9][0-9]*(\.[0-9]+)?/))
+    .map(function(n) { return {type: 'num', value: parseFloat(n)}; });
   var bool = regex(/true|false/i)
     .map(function(n) { return {type:'bool', value: n}; });
   var literal = regex(/"\w+"/i)
