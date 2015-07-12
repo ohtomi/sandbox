@@ -11,6 +11,14 @@ var misc = require('../misc.js');
 
 var ExcelView = React.createClass({
 
+  componentDidMount: function() {
+    ExcelStore.addListener(this.handleExcelStoreEvent);
+  },
+
+  componentWillUnmount: function() {
+    ExcelStore.removeListener(this.handleExcelStoreEvent);
+  },
+
   getInitialState: function() {
     return {
       cells: ExcelStore.getAllCells(),
@@ -20,11 +28,22 @@ var ExcelView = React.createClass({
         label: misc.buildCellLabel(0, 0),
         func: null,
         value: ''
+      },
+      toolbar: {
+        focus: false
       }
     };
   },
 
+  handleExcelStoreEvent: function() {
+    this.setState({cells: ExcelStore.getAllCells()});
+  },
+
   handleMouseClick: function(x, y) {
+    if (x < 0 || y < 0) {
+      return;
+    }
+
     var cell = ExcelStore.getCell(x, y);
     if (cell) {
       this.setState({activeCell: cell});
@@ -39,6 +58,11 @@ var ExcelView = React.createClass({
         }
       });
     }
+    this.setState({
+      toolbar: {
+        focus: (this.state.activeCell.x === x && this.state.activeCell.y === y)
+      }
+    });
   },
 
   handleInput: function(value) {
@@ -47,7 +71,6 @@ var ExcelView = React.createClass({
       cell.value = value;
       cell.func = value.startsWith('=') ? misc.buildFormulaJsFunction(misc.parseExcelFunction(value.slice(1))) : null;
       ExcelStore.updateCell(cell);
-      this.setState({cells: ExcelStore.getAllCells()});
     } else {
       cell = {
         x: this.state.activeCell.x,
@@ -57,7 +80,6 @@ var ExcelView = React.createClass({
         value: value
       };
       ExcelStore.updateCell(cell);
-      this.setState({cells: ExcelStore.getAllCells()});
     }
 
     this.setState({activeCell: cell});
@@ -66,8 +88,8 @@ var ExcelView = React.createClass({
   render: function() {
     return (
       <div>
-        <ExcelToolbar activeCell={this.state.activeCell} handleInput={this.handleInput} />
-        <ExcelTable cells={this.state.cells} handleMouseClick={this.handleMouseClick} />
+        <ExcelToolbar activeCell={this.state.activeCell} focus={this.state.toolbar.focus} handleInput={this.handleInput} />
+        <ExcelTable cells={this.state.cells} activeCell={this.state.activeCell} handleMouseClick={this.handleMouseClick} />
       </div>
     );
   }

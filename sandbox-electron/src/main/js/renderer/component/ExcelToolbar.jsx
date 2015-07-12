@@ -12,11 +12,18 @@ var ExcelToolbar = React.createClass({
   },
 
   render: function() {
+    var this_ = this;
+    setTimeout(function() {
+      if (this_.props.focus) {
+        React.findDOMNode(this_.refs.value).focus();
+      }
+    }, 0);
+
     return (
       <div style={{width: '100%', marginTop: '2px', marginBottom: '2px'}}>
-        <input type="text" style={{width: '10%'}} value={this.props.activeCell.label} readOnly />
+        <input type="text" style={{width: '10%'}} ref="label" value={this.props.activeCell.label} readOnly />
         {' fx '}
-        <input type="text" style={{width: '80%'}} value={this.props.activeCell.value} onChange={this.handleInput} />
+        <input type="text" style={{width: '80%'}} ref="value" value={this.props.activeCell.value} onChange={this.handleInput} />
       </div>
     );
   }

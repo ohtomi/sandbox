@@ -5,6 +5,7 @@
 
 var React = require('react');
 var ExcelCell = require('./ExcelCell.js');
+var ExcelActiveCell = require('./ExcelActiveCell.js');
 
 var ExcelTable = React.createClass({
 
@@ -35,6 +36,7 @@ var ExcelTable = React.createClass({
     return (
       <div className="jagrid" style={style} onClick={this.handleMouseClick}>
         {rows}
+        <ExcelActiveCell key="active-cell" cell={this.props.activeCell} />
       </div>
     );
   }

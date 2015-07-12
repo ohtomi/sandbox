@@ -59,6 +59,7 @@ function parseExcelFunction(func) {
   var comma = string(',')
     .map(function(n) { return {type:'comma', value: n}; });
 
+  // for (var s in formulajs) { console.log('    regex(/' + s + '/i),'); }
   var functions = seq(alt(
     regex(/BETADIST/i),
     regex(/BETAINV/i),
