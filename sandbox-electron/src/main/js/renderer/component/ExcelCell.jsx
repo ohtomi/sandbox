@@ -5,6 +5,7 @@
 
 var React = require('react');
 var ExcelStore = require('../store/ExcelStore.js');
+var HtmlForm = require('./HtmlForm.js');
 
 var ExcelCell = React.createClass({
 
@@ -16,7 +17,7 @@ var ExcelCell = React.createClass({
     };
     return (
       <div data-x={this.props.cell.x} data-y={this.props.cell.y} style={style}>
-        {this.props.cell.func ? this.props.cell.func(ExcelStore) : this.props.cell.value}
+        {this.props.cell.func ? this.props.cell.func(ExcelStore) :  <HtmlForm value={this.props.cell.value} />}
       </div>
     );
   }

@@ -11,7 +11,17 @@ var cells = [
   { x: 1, y: 2, label: misc.buildCellLabel(1, 2), func: null, value: 'We are using' },
   { x: 2, y: 5, label: misc.buildCellLabel(2, 5),
     func: misc.buildFormulaJsFunction(misc.parseExcelFunction('if(true, "xxx", abs(3))')),
-    value: '=if(true, "xxx", abs(3))' }
+    value: '=if(true, "xxx", abs(3))' },
+  { x: 3, y: 7, label: misc.buildCellLabel(3, 7),
+    func: null, value: '{"type": "text", "name": "text-name", "default": "text-value"}'},
+  { x: 3, y: 8, label: misc.buildCellLabel(3, 7),
+    func: null, value: '{"type": "radio", "name": "radio-name", "value": "radio-value1"}'},
+  { x: 9, y: 8, label: misc.buildCellLabel(3, 7),
+    func: null, value: '{"type": "radio", "name": "radio-name", "value": "radio-value2"}'},
+  { x: 3, y: 9, label: misc.buildCellLabel(3, 7),
+    func: null, value: '{"type": "checkbox", "name": "check-name1", "value": "check-value2"}'},
+  { x: 9, y: 9, label: misc.buildCellLabel(3, 7),
+    func: null, value: '{"type": "checkbox", "name": "check-name2", "value": "check-value1"}'}
 ];
 
 function addListener(listener) {
