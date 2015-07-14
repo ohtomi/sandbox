@@ -17,6 +17,7 @@ var cells = [
   { x: 2, y: 5, label: misc.buildCellLabel(2, 5), func: null, value: 'チェックボックス' },
   { x: 2, y: 6, label: misc.buildCellLabel(2, 6), func: null, value: 'セレクトボックス' },
   { x: 2, y: 7, label: misc.buildCellLabel(2, 7), func: null, value: '（マルチ選択）' },
+  { x: 2, y: 12, label: misc.buildCellLabel(2, 12), func: null, value: '送信ボタン' },
   { x: 10, y: 3, label: misc.buildCellLabel(10, 3),
     func: null,
     value: '{"type": "text", "name": "text-name", "default": "text-value"}'},
@@ -31,7 +32,10 @@ var cells = [
     value: '{"type": "select", "name": "select-name", "value": ["select-value1", "select-value2", "select-value3"]}'},
   { x: 10, y: 7, label: misc.buildCellLabel(10, 7),
     func: null,
-    value: '{"type": "select", "name": "select-m-name", "multiple": true, "size": 5, "value": ["select-value1", "select-value2", "select-value3"]}'}
+    value: '{"type": "select", "name": "select-m-name", "multiple": true, "size": 5, "value": ["select-value1", "select-value2", "select-value3"]}'},
+  { x: 10, y: 12, label: misc.buildCellLabel(10, 12),
+    func: null,
+    value: '{"type": "button", "name": "button-name", "url": "/path/to/ajax", "value": "button-value"}'}
 ];
 
 function addListener(listener) {

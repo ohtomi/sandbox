@@ -69,6 +69,21 @@ var HtmlForm = React.createClass({
     );
   },
 
+  renderButton: function(json) {
+    var onClick = function(e) {
+      var formData = [];
+
+      console.log('send ajax request...', json.url, json.name, json.value, formData);
+    };
+    return (
+      <div style={{zIndex: 3000}}>
+        <button name={json.name} value={json.value} onClick={onClick}>
+          {json.value}
+        </button>
+      </div>
+    );
+  },
+
   render: function() {
     try {
       var json = JSON.parse(this.props.value);
@@ -81,6 +96,8 @@ var HtmlForm = React.createClass({
         return this.renderCheckBox(json);
       } else if (json.type === 'select') {
         return this.renderSelectBox(json);
+      } else if (json.type === 'button') {
+        return this.renderButton(json);
       } else {
         return <span>{this.props.value}</span>;
       }
