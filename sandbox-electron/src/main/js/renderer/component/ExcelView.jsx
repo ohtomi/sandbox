@@ -31,7 +31,8 @@ var ExcelView = React.createClass({
       },
       toolbar: {
         focus: false
-      }
+      },
+      viewMode: 'EXCEL' // 'EXCEL' or 'APPLICATION'
     };
   },
 
@@ -40,6 +41,9 @@ var ExcelView = React.createClass({
   },
 
   handleMouseClick: function(x, y) {
+    if (this.state.viewMode !== 'EXCEL') {
+      return;
+    }
     if (x < 0 || y < 0) {
       return;
     }
@@ -85,10 +89,36 @@ var ExcelView = React.createClass({
     this.setState({activeCell: cell});
   },
 
+  changeViewMode: function(newMode) {
+    if (newMode === 'EXCEL') {
+      this.setState({
+        activeCell: {
+          x: 0,
+          y: 0,
+          label: misc.buildCellLabel(0, 0),
+          func: null,
+          value: ''
+        }
+      });
+      this.setState({viewMode: newMode});
+    } else if (newMode === 'APPLICATION') {
+      this.setState({
+        activeCell: {
+          x: -1,
+          y: -1,
+          label: '---',
+          func: null,
+          value: ''
+        }
+      });
+      this.setState({viewMode: newMode});
+    }
+  },
+
   render: function() {
     return (
       <div>
-        <ExcelToolbar activeCell={this.state.activeCell} focus={this.state.toolbar.focus} handleInput={this.handleInput} />
+        <ExcelToolbar activeCell={this.state.activeCell} focus={this.state.toolbar.focus} viewMode={this.state.viewMode} handleInput={this.handleInput} changeViewMode={this.changeViewMode} />
         <ExcelTable cells={this.state.cells} activeCell={this.state.activeCell} handleMouseClick={this.handleMouseClick} />
       </div>
     );
