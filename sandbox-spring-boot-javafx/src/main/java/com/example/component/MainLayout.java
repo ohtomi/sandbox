@@ -20,6 +20,8 @@ public class MainLayout extends GridPane {
         add(new ToolbarLayout(), 0, 0);
         add(this.inputArea, 0, 1);
         add(this.outputArea, 0, 2);
+
+        this.inputArea.setText("javafx.application.Platform.runLater(() -> { new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING, \"Hello, World!\", javafx.scene.control.ButtonType.OK).showAndWait(); });"); // TODO
     }
 
     public void focusToInput() {
