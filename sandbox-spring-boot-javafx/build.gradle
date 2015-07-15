@@ -1,0 +1,131 @@
+buildscript {
+  repositories {
+    jcenter()
+    maven { url 'http://repo.spring.io/snapshot' }
+    maven { url 'http://repo.spring.io/milestone' }
+  }
+  dependencies {
+    classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.3.0.BUILD-SNAPSHOT'
+  }
+}
+
+plugins {
+  id 'java'
+  id 'checkstyle'
+  id 'findbugs'
+  id 'jacoco'
+}
+apply plugin: 'spring-boot'
+
+/*
+ * java plugin settings
+ */
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+processResources {
+  project.ext['native2ascii.target.extensions'].tokenize(',').each {
+    filesMatching('**/*.' + it) {
+      filter(org.apache.tools.ant.filters.EscapeUnicode)
+    }
+  }
+}
+
+jar {
+  baseName = myAppTitle
+  version = myAppVersion
+}
+
+test {
+  maxParallelForks = 1
+  forkEvery = 100
+  minHeapSize = '128m'
+  maxHeapSize = '128m'
+  jvmArgs = ['-XX:+UseG1GC']
+}
+
+/*
+ * spring-boot plugin settings
+ */
+applicationName = myAppTitle
+mainClassName = myAppMainClass
+
+/*
+ * checkstyle plugin settings
+ */
+checkstyle {
+  configFile = file('gradle/checkstyle/sun_checks.xml')
+  toolVersion = '6.7'
+  ignoreFailures = true
+  sourceSets = [sourceSets.main]
+}
+
+/*
+ * findbugs plugin settings
+ */
+findbugs {
+  toolVersion = '3.0.1'
+  ignoreFailures = true
+  sourceSets = [sourceSets.main]
+}
+
+/*
+ * jacoco plugin settings
+ */
+jacoco {
+  toolVersion = '0.7.5.201505241946'
+}
+
+/*
+ * javac encoding settings
+ */
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+//tasks.withType(JavaCompile){ options.encoding = 'UTF-8' }
+
+/*
+ * dependency settings
+ */
+repositories {
+  jcenter()
+  maven { url 'http://repo.spring.io/snapshot' }
+  maven { url 'http://repo.spring.io/milestone' }
+}
+
+dependencies {
+  compile 'org.springframework.boot:spring-boot-starter-web'
+  compile 'org.slf4j:slf4j-api:1.7.12'
+  compile 'ch.qos.logback:logback-classic:1.1.3'
+
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-core:1.10.19'
+  testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+/*
+ * task definitions
+ */
+apply from: 'gradle/integrationTest.gradle'
+
+task initDirs(description: '''Creates 'java' and 'resources' directories under all sourceSets''') << {
+  sourceSets*.java.srcDirs*.each {
+    it.mkdirs()
+  }
+  sourceSets*.resources.srcDirs*.each {
+    it.mkdirs()
+  }
+}
+
+tasks.addRule('''Pattern: copyProfileResource<ProfileName>: Copies the resource files of a profile.''') {
+  taskName ->
+  def profileName = taskName.replace('copyProfileResource', '').toLowerCase()
+  if (taskName.startsWith('copyProfileResource')) {
+    task (taskName, type: Copy) {
+      from "profiles/${profileName}"
+      into sourceSets.main.output.resourcesDir
+    }
+  }
+}
+def activeProfileName = myActiveProfile.substring(0, 1).toUpperCase() + \
+                        myActiveProfile.substring(1).toLowerCase()
+def taskName = 'copyProfileResource' + activeProfileName
+classes.dependsOn taskName
