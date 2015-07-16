@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.example.action.ClearAction;
 import com.example.action.RunAction;
 import com.example.store.EvaluationResultStore;
 import com.example.store.StoreEventListener;
@@ -56,6 +57,7 @@ public class MainLayout extends GridPane implements StoreEventListener {
         });
 
         toolbar.setClearButtonListener(event -> {
+            new ClearAction().execute();
         });
 
         inputArea.setOnKeyPressed(key -> {
@@ -76,6 +78,9 @@ public class MainLayout extends GridPane implements StoreEventListener {
 
     @Override
     public void onClear() {
+        Platform.runLater(() -> {
+            outputArea.clear();
+        });
     }
 
     public void focusToInput() {
