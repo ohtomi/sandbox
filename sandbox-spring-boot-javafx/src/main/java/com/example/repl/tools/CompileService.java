@@ -3,7 +3,6 @@ package com.example.repl.tools;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileManager;
@@ -12,11 +11,11 @@ import javax.tools.ToolProvider;
 
 public class CompileService {
 
-    protected DiagnosticListener<? super JavaFileObject> listener = new CompileErrorListener();
+    protected CompileErrorListener listener = new CompileErrorListener();
 
     protected JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
-    public <T> Class<T> execute(String className, String sourceCode) {
+    public <T> Class<T> execute(String className, String sourceCode) throws CompileFailureException {
         JavaFileObject sourceObject = new JavaClassSourceCode(className, sourceCode);
 
         List<JavaFileObject> compilationUnits = Arrays.asList(sourceObject);
@@ -26,7 +25,7 @@ public class CompileService {
 
         boolean successCompile = task.call();
         if (!successCompile) {
-            throw new RuntimeException("Failed to compile " + className);
+            throw new CompileFailureException("Failed to compile " + className, listener.getLastErrorInfo());
         }
 
         ClassLoader cl = manager.getClassLoader(null);
