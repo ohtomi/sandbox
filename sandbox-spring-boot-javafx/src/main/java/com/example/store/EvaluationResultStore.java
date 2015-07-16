@@ -28,6 +28,14 @@ public class EvaluationResultStore implements ActionEventListener {
         instance.listeners.remove(listener);
     }
 
+    public static String getStatements() {
+        String allStatement = "";
+        for (String s : instance.statements) {
+            allStatement += s + ";" + System.lineSeparator();
+        }
+        return allStatement;
+    }
+
     private EvaluationResultStore() {
     }
 
@@ -40,6 +48,7 @@ public class EvaluationResultStore implements ActionEventListener {
         if (action.getType().equals(RunAction.TYPE)) {
             String statement = action.getPayloadEntry(RunAction.STATEMENT);
             String outputs = action.getPayloadEntry(RunAction.OUTPUTS);
+            statements.add(statement);
             listeners.forEach(listener -> {
                 listener.onEvaluate(statement, outputs);
             });

@@ -11,6 +11,7 @@ import javax.tools.JavaFileObject;
 
 import com.example.repl.Evaluator;
 import com.example.repl.tools.CompileFailureException;
+import com.example.store.EvaluationResultStore;
 
 public class RunAction implements ActionCreator {
 
@@ -28,7 +29,8 @@ public class RunAction implements ActionCreator {
                 try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         PrintStream newOut = new PrintStream(baos)) {
 
-                    Evaluator.execute(statement, newOut);
+                    String statements = EvaluationResultStore.getStatements() + statement;
+                    Evaluator.execute(statements, newOut);
                     String outputs = baos.toString();
                     Action action = new Action(TYPE) //
                             .putPayloadEntry(STATEMENT, statement) //
@@ -50,7 +52,7 @@ public class RunAction implements ActionCreator {
                 }
             });
         } finally {
-            executor.shutdownNow();
+            executor.shutdown();
         }
     }
 }

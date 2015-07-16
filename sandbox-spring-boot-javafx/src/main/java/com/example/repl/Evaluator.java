@@ -28,7 +28,7 @@ public class Evaluator {
             e.printStackTrace(newOut);
         } finally {
             System.setOut(oldOut);
-            executor.shutdownNow();
+            executor.shutdown();
         }
     }
 
