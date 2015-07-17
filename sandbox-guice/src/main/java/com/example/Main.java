@@ -15,8 +15,11 @@ public class Main {
     }
 
     public void getInstance() {
-        SampleInterface instance = injector.getInstance(Key.get(SampleInterface.class, Names.named("sample")));
+        SampleInterface instance = injector.getInstance(Key.get(SampleInterface.class, Names.named("sample1")));
         System.out.println("get? " + instance);
+        System.out.println("type " + instance.getClass());
+        System.out.println("cast " + instance.getClass().cast(instance);
+        //System.out.println("foo? " + instance.getClass().cast(instance).foo());
     }
 
 }
