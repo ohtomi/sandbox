@@ -25,6 +25,9 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         stage.setScene(new Scene(mainLayout));
         stage.setTitle("Java REPL Console");
+        stage.setWidth(800);
+        stage.setHeight(600);
+        stage.setResizable(false);
         stage.show();
         mainLayout.focusToInput();
     }

@@ -9,14 +9,14 @@ import com.example.action.ActionEventListener;
 import com.example.action.ClearAction;
 import com.example.action.RunAction;
 
-public class EvaluationResultStore implements ActionEventListener {
+public class ReplHistoryStore implements ActionEventListener {
 
-    public static final String EVENT_SOURCE = EvaluationResultStore.class.getCanonicalName();
+    public static final String EVENT_SOURCE = ReplHistoryStore.class.getCanonicalName();
 
-    private static EvaluationResultStore instance;
+    private static ReplHistoryStore instance;
 
     static {
-        instance = new EvaluationResultStore();
+        instance = new ReplHistoryStore();
         ActionDispatcher.register(instance);
     }
 
@@ -29,32 +29,32 @@ public class EvaluationResultStore implements ActionEventListener {
     }
 
     public static String getStatements() {
-        String allStatement = "";
-        for (String s : instance.statements) {
-            allStatement += s + ";" + System.lineSeparator();
+        String statements = "";
+        for (String statement : instance.history) {
+            statements += statement + ";" + System.lineSeparator();
         }
-        return allStatement;
+        return statements;
     }
 
-    private EvaluationResultStore() {
+    private ReplHistoryStore() {
     }
 
     private List<StoreEventListener> listeners = new ArrayList<>();
 
-    private List<String> statements = new ArrayList<>();
+    private List<String> history = new ArrayList<>();
 
     @Override
     public void fireAction(String eventSource, Action action) {
         if (action.getType().equals(RunAction.TYPE)) {
             String statement = action.getPayloadEntry(RunAction.STATEMENT);
             String outputs = action.getPayloadEntry(RunAction.OUTPUTS);
-            statements.add(statement);
+            history.add(statement);
             listeners.forEach(listener -> {
                 listener.onEvaluate(statement, outputs);
             });
         }
         if (action.getType().equals(ClearAction.TYPE)) {
-            statements.clear();
+            history.clear();
             listeners.forEach(listener -> {
                 listener.onClear();
             });

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.action.ClearAction;
 import com.example.action.RunAction;
-import com.example.store.EvaluationResultStore;
+import com.example.store.ReplHistoryStore;
 import com.example.store.StoreEventListener;
 
 @Component
@@ -36,9 +36,15 @@ public class MainLayout extends GridPane implements StoreEventListener {
     }
 
     public void buildComponent() {
-        inputArea
-                .setText("javafx.application.Platform.runLater(() -> { new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING, \"Hello, World!\", javafx.scene.control.ButtonType.OK).showAndWait(); });"); // TODO
+        inputArea.setPrefWidth(794);
+        outputArea.setPrefWidth(794);
+        outputArea.setPrefHeight(515);
+
         outputArea.setEditable(false);
+        outputArea.setWrapText(true);
+
+        inputArea
+                .setText("javafx.application.Platform.runLater(() -> { new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING, \"Hello, World!\", javafx.scene.control.ButtonType.OK).showAndWait(); });");
     }
 
     private void buildLayout() {
@@ -50,7 +56,7 @@ public class MainLayout extends GridPane implements StoreEventListener {
     }
 
     private void buildEventListener() {
-        EvaluationResultStore.addListener(this);
+        ReplHistoryStore.addListener(this);
 
         toolbar.setRunButtonListener(event -> {
             new RunAction().execute(inputArea.getText());
