@@ -70,14 +70,9 @@ var HtmlForm = React.createClass({
   },
 
   renderButton: function(json) {
-    var onClick = function(e) {
-      var formData = [];
-
-      console.log('send ajax request...', json.url, json.name, json.value, formData);
-    };
     return (
       <div style={{zIndex: 3000}}>
-        <button name={json.name} value={json.value} onClick={onClick}>
+        <button name={json.name} value={json.value}>
           {json.value}
         </button>
       </div>

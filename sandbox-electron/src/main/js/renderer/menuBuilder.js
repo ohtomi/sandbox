@@ -57,11 +57,26 @@ function build() {
           accelerator: 'Command+O',
           click: function() {
             var options = {
-              properties: ['openDirectory']
+              properties: ['openFile']
             };
             remote.require('dialog').showOpenDialog(options, function(baseDir) {
               if (baseDir && baseDir[0]) {
                 console.log('you selected "' + baseDir[0] + '"');
+                var Excel = require('exceljs');
+                var workbook = new Excel.Workbook();
+                workbook.xlsx.readFile(baseDir[0])
+                  .then(function() {
+                    workbook.eachSheet(function(sheet) {
+                      sheet.eachRow(function(row) {
+                        row.eachCell(function(cell) {
+                          console.log(cell.address, cell.type, cell.value);
+                        });
+                      });
+                    });
+                  })
+                  .catch(function(err) {
+                    console.log(err);
+                  });
               }
             });
           }

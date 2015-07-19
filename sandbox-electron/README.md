@@ -11,6 +11,7 @@ A sample Electron application.
 - parsimmon 0.7.0
 - formulajs (https://github.com/sutoiku/formula.js)
 - jagrid (https://github.com/kawasima/jagrid)
+- exceljs 0.2.3
 
 ## Usage
 
