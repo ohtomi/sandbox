@@ -116,12 +116,6 @@ var ExcelView = React.createClass({
   },
 
   render: function() {
-    setTimeout(function() {
-      if (!document.getElementsByClassName('jg-header') || document.getElementsByClassName('jg-header').length === 0) {
-        jagrid.render();
-      }
-    }, 0);
-
     return (
       <div>
         <ExcelToolbar activeCell={this.state.activeCell} focus={this.state.toolbar.focus} viewMode={this.state.viewMode} handleInput={this.handleInput} changeViewMode={this.changeViewMode} />
