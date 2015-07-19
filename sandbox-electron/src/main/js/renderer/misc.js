@@ -570,6 +570,7 @@ function buildFormulaJsFunction(tokens) {
 
 module.exports = {
   captureThisWindow: captureThisWindow,
+  parseCellLabel: parseCellLabel,
   buildCellLabel: buildCellLabel,
   parseExcelFunction: parseExcelFunction,
   buildFormulaJsFunction: buildFormulaJsFunction

@@ -4,6 +4,8 @@
 'use strict';
 
 var React = require('react');
+var ExcelColumnHeader = require('./ExcelColumnHeader.js');
+var ExcelRowHeader = require('./ExcelRowHeader.js');
 var ExcelCell = require('./ExcelCell.js');
 var ExcelActiveCell = require('./ExcelActiveCell.js');
 
@@ -30,11 +32,13 @@ var ExcelTable = React.createClass({
       height: '2020px'
     };
     var rows = [];
-    this.props.cells.forEach(function(cell, idx) {
-      rows.push(<ExcelCell cell={cell} key={idx} />);
+    this.props.cells.forEach(function(cell) {
+      rows.push(<ExcelCell cell={cell} key={cell.label} />);
     });
     return (
       <div className="jagrid" style={style} onClick={this.handleMouseClick}>
+        <ExcelColumnHeader />
+        <ExcelRowHeader />
         {rows}
         <ExcelActiveCell key="active-cell" cell={this.props.activeCell} />
       </div>

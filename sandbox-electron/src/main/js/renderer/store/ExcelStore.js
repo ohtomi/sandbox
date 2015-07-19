@@ -5,6 +5,7 @@
 
 var EventEmitter = require('events').EventEmitter;
 var emitter = new EventEmitter();
+var Excel = require('remote').require('exceljs');
 var misc = require('../misc.js');
 
 var cells = [
@@ -96,12 +97,49 @@ function updateCell(newCell) {
   emitter.emit('ExcelStore');
 }
 
+function readFile(excelFile) {
+  var workbook = new Excel.Workbook();
+  workbook.xlsx.readFile(excelFile)
+    .then(function() {
+      cells = [];
+      workbook.eachSheet(function(sheet) {
+        sheet.eachRow(function(row) {
+          row.eachCell(function(cell) {
+            var position = misc.parseCellLabel(cell.address);
+            if (cell.type !== 6) {
+              cells.push({
+                x: position.x,
+                y: position.y,
+                label: cell.address,
+                func: null,
+                value: cell.value
+              });
+            } else {
+              cells.push({
+                x: position.x,
+                y: position.y,
+                label: cell.address,
+                func: misc.buildFormulaJsFunction(misc.parseExcelFunction(cell.value.formula)),
+                value: '=' + cell.value.formula
+              });
+            }
+          });
+        });
+      });
+      emitter.emit('ExcelStore');
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+}
+
 module.exports = {
   addListener: addListener,
   removeListener: removeListener,
   getAllCells: getAllCells,
   getCell: getCell,
-  updateCell: updateCell
+  updateCell: updateCell,
+  readFile: readFile
 };
 
 })();
