@@ -42,9 +42,6 @@ public class MainLayout extends GridPane implements StoreEventListener {
 
         outputArea.setEditable(false);
         outputArea.setWrapText(true);
-
-        inputArea
-                .setText("javafx.application.Platform.runLater(() -> { new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING, \"Hello, World!\", javafx.scene.control.ButtonType.OK).showAndWait(); });");
     }
 
     private void buildLayout() {
