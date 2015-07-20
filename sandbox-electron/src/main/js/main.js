@@ -17,9 +17,9 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 800, height: 1000, 'zoom-factor': 1.5});
+  mainWindow = new BrowserWindow({width: 800, height: 700, 'zoom-factor': 1.5});
   mainWindow.loadUrl('file://' + __dirname + '/../html/index.html');
-  mainWindow.openDevTools();
+  //mainWindow.openDevTools();
   mainWindow.on('closed', function() {
     mainWindow = null;
   });

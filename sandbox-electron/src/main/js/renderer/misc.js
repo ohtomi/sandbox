@@ -3,16 +3,6 @@
 
 'use strict';
 
-function captureThisWindow() {
-  var remote = require('remote');
-  remote.getCurrentWindow().capturePage(function(image) {
-    var buf = image.toPng();
-    remote.require('fs').writeFile('/tmp/screenshot.png', buf, function(err) {
-      console.log(err);
-    });
-  });
-}
-
 function parseCellLabel(label) {
   var xLabel = label.match(/[a-z]+/i)[0];
   var yLabel = label.match(/[0-9]+/i)[0];
@@ -569,7 +559,6 @@ function buildFormulaJsFunction(tokens) {
 }
 
 module.exports = {
-  captureThisWindow: captureThisWindow,
   parseCellLabel: parseCellLabel,
   buildCellLabel: buildCellLabel,
   parseExcelFunction: parseExcelFunction,
