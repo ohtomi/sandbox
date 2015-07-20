@@ -39,9 +39,7 @@ public class RunAction implements ActionCreator {
 
                 } catch (CompileFailureException e) {
                     Diagnostic<? extends JavaFileObject> diagnostic = e.getLastErrorInfo();
-                    String outputs = diagnostic.getLineNumber() + System.lineSeparator();
-                    outputs += diagnostic.getColumnNumber() + System.lineSeparator();
-                    outputs += diagnostic.getMessage(null) + System.lineSeparator();
+                    String outputs = diagnostic.getMessage(null) + System.lineSeparator();
                     Action action = new Action(TYPE) //
                             .putPayloadEntry(STATEMENT, statement) //
                             .putPayloadEntry(OUTPUTS, outputs);
