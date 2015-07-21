@@ -58,7 +58,7 @@ function parseExcelFunction(func) {
   var num = alt(regex(/-?[1-9][0-9]*(\.[0-9]+)?/))
     .map(function(n) { return {type: 'num', value: parseFloat(n)}; });
   var bool = regex(/true|false/i)
-    .map(function(n) { return {type:'bool', value: n}; });
+    .map(function(n) { return {type:'bool', value: n.toLowerCase()}; });
   // TODO <literal> should match a string including escaped double-quote. eg. " foo """ bar "
   var literal = regex(/".*"/i)
     .map(function(n) { return {type:'literal', value: n}; });
