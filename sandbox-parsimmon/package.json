@@ -1,0 +1,15 @@
+{
+  "name": "sandbox-parsimmon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main/js/main.js",
+  "scripts": {
+    "example": "node src/main/js/main.js"
+  },
+  "author": "Kenichi Ohtomi",
+  "license": "MIT",
+  "dependencies": {
+    "parsimmon": "^0.7.0"
+  },
+  "devDependencies": {}
+}
