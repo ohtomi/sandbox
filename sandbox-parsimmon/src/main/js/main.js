@@ -491,6 +491,8 @@ function parseExcelFunction(func) {
   return parser.parse(func).value;
 }
 
-console.log(parseExcelFunction('IF(TRUE, B3, J10)'));
+module.exports = {
+  parseExcelFunction: parseExcelFunction
+};
 
 })();

@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/main/js/main.js",
   "scripts": {
-    "example": "node src/main/js/main.js"
+    "test": "node src/test/js/main.js"
   },
   "author": "Kenichi Ohtomi",
   "license": "MIT",
