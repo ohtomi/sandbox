@@ -31,7 +31,12 @@ def build(ctx):
     ctx(name = 'compile_sources',
             features = 'javac',
             sourcepath = ['src/main/java', 'src/main/resources'],
-            classpath = ['.', '..'],
+            classpath = [
+                    '.',
+                    '../lib/slf4j-api-1.7.12.jar',
+                    '../lib/logback-classic-1.1.3.jar',
+                    '../lib/logback-core-1.1.3.jar'
+            ],
             compat = '1.8',
             outdir = 'classes/main'
     )
@@ -52,3 +57,7 @@ def build(ctx):
 def dist(ctx):
     ctx.base_name = '%s-%s-sources' % (APPNAME, VERSION)
     ctx.algo = 'zip'
+
+def run_main(ctx):
+    import subprocess
+    subprocess.call(['java', '-cp', 'lib/*:build/example-1.0.0.jar', 'com.example.Main'])

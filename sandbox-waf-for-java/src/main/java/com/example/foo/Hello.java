@@ -3,16 +3,21 @@ package com.example.foo;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Hello {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Hello.class);
 
     public void print() {
         try {
             Properties props = new Properties();
             props.load(this.getClass().getResourceAsStream("/locale/messages.properties"));
             String message = props.getProperty("message.hello");
-            System.out.println(message);
+            LOGGER.info(message);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to load properties", e);
         }
     }
 
