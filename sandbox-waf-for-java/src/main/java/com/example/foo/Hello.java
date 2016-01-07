@@ -10,14 +10,15 @@ public class Hello {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hello.class);
 
-    public void print() {
+    public String print() {
         try {
             Properties props = new Properties();
             props.load(this.getClass().getResourceAsStream("/locale/messages.properties"));
             String message = props.getProperty("message.hello");
-            LOGGER.info(message);
+            return message;
         } catch (IOException e) {
             LOGGER.error("Failed to load properties", e);
+            return "";
         }
     }
 

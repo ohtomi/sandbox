@@ -18,7 +18,7 @@ def build(ctx):
     def _(current_dir, relative_dir):
         import os
         for file in os.listdir(current_dir):
-            if (os.path.isdir(os.path.join(current_dir, file))):
+            if os.path.isdir(os.path.join(current_dir, file)):
                 _(os.path.join(current_dir, file), os.path.join(relative_dir, file))
             else:
                 ctx(name = 'copy_resources', use = 'make_directory',
@@ -29,13 +29,16 @@ def build(ctx):
     _('src/main/resources', '')
 
     ctx(name = 'compile_sources',
-            features = 'javac',
+            features = 'javac junit',
             sourcepath = ['src/main/java', 'src/main/resources'],
+            sourcepath_test = 'src/test/java',
             classpath = [
                     '.',
                     '../lib/slf4j-api-1.7.12.jar',
                     '../lib/logback-classic-1.1.3.jar',
-                    '../lib/logback-core-1.1.3.jar'
+                    '../lib/logback-core-1.1.3.jar',
+                    '../lib/junit-4.12.jar',
+                    '../lib/hamcrest-core-1.3.jar'
             ],
             compat = '1.8',
             outdir = 'classes/main'
@@ -61,3 +64,56 @@ def dist(ctx):
 def run_main(ctx):
     import subprocess
     subprocess.call(['java', '-cp', 'lib/*:build/example-1.0.0.jar', 'com.example.Main'])
+
+def import_junit_test_runner():
+    import os
+    from waflib import Task, TaskGen, Utils, Options
+    from waflib.TaskGen import feature, before, after
+    from waflib.Configure import conf
+
+    JUNIT_RUNNER = 'org.junit.runner.JUnitCore'
+
+    def make_junit_task(self):
+        if not getattr(self, 'sourcepath_test', None):
+            return
+        junit_task = self.create_task('junit_test')
+        try:
+            junit_task.set_run_after(self.javac_task)
+        except:
+            pass
+
+    feature('junit')(make_junit_task)
+    after('apply_java', 'use_javac_files')(make_junit_task)
+
+    class junit_test(Task.Task):
+        color = 'YELLOW'
+        vars = []
+
+        def runnable_status(self):
+            for t in self.run_after:
+                if not t.hasrun:
+                    return Task.ASK_LATER
+
+            n = self.generator.path.find_dir(self.generator.sourcepath_test)
+            if not n:
+                self.generator.bld.fatal('no such junit directory %r' % self.generator.sourcepath_test)
+            self.base = n
+
+            self.inputs = n.ant_glob('**/*.java')
+
+            ret = super(junit_test, self).runnable_status()
+            if ret == Task.SKIP_ME:
+                if getattr(Options.option, 'junit', False):
+                    ret = Task.RUN_ME
+            return ret
+
+        def run(self):
+            cmd = []
+            cmd.extend(self.env.JAVA)
+            cmd.append('-classpath')
+            cmd.append(self.generator.javac_task.env.CLASSPATH + os.pathsep + self.generator.javac_task.env.OUTDIR)
+            cmd.append(JUNIT_RUNNER)
+            cmd.extend([x.path_from(self.base).replace('.java', '').replace(os.sep, '.') for x in self.inputs])
+            return self.exec_command(cmd)
+
+import_junit_test_runner()
