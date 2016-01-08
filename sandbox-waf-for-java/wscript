@@ -3,6 +3,7 @@
 
 APPNAME = 'example'
 VERSION = '1.0.0'
+MAIN_CLASS = 'com.example.Main'
 
 top = '.'
 out = 'build'
@@ -15,18 +16,19 @@ def build(ctx):
             rule = 'mkdir -p classes/main'
     )
 
-    def _(current_dir, relative_dir):
+    def _copy_resources_task(current_dir, relative_dir):
         import os
         for file in os.listdir(current_dir):
             if os.path.isdir(os.path.join(current_dir, file)):
-                _(os.path.join(current_dir, file), os.path.join(relative_dir, file))
+                _copy_resources_task(os.path.join(current_dir, file), os.path.join(relative_dir, file))
             else:
                 ctx(name = 'copy_resources', use = 'make_directory',
                         rule = 'cp ${SRC} ${TGT}',
                         source = os.path.join(current_dir, file),
                         target = os.path.join('classes/main', relative_dir, file)
                 )
-    _('src/main/resources', '')
+
+    _copy_resources_task('src/main/resources', '')
 
     ctx(name = 'compile_sources',
             features = 'javac junit',
@@ -34,11 +36,8 @@ def build(ctx):
             sourcepath_test = 'src/test/java',
             classpath = [
                     '.',
-                    '../lib/slf4j-api-1.7.12.jar',
-                    '../lib/logback-classic-1.1.3.jar',
-                    '../lib/logback-core-1.1.3.jar',
-                    '../lib/junit-4.12.jar',
-                    '../lib/hamcrest-core-1.3.jar'
+                    '../lib/main/*',
+                    '../lib/test/*'
             ],
             compat = '1.8',
             outdir = 'classes/main'
@@ -50,12 +49,22 @@ def build(ctx):
             destfile = '%s-%s.jar' % (APPNAME, VERSION),
     )
 
-    ctx(name = 'generate_javadoc',
-            features = 'javadoc',
-            srcdir = 'src/main/java',
-            javadoc_package = ['com.example'],
-            javadoc_output = 'javadoc',
-    )
+    def _generate_javadoc_task(src_dir):
+        javadoc_packages = []
+
+        import os
+        for file in os.listdir(src_dir):
+            if os.path.isdir(os.path.join(src_dir, file)):
+                javadoc_packages.append(file)
+
+        ctx(name = 'generate_javadoc',
+                features = 'javadoc',
+                srcdir = src_dir,
+                javadoc_package = javadoc_packages,
+                javadoc_output = 'javadoc',
+        )
+
+    _generate_javadoc_task('src/main/java')
 
 def dist(ctx):
     ctx.base_name = '%s-%s-sources' % (APPNAME, VERSION)
@@ -63,7 +72,7 @@ def dist(ctx):
 
 def run_main(ctx):
     import subprocess
-    subprocess.call(['java', '-cp', 'lib/*:build/example-1.0.0.jar', 'com.example.Main'])
+    subprocess.call(['java', '-cp', 'lib/main/*:%s/%s-%s.jar' % (out, APPNAME, VERSION), MAIN_CLASS])
 
 def import_junit_test_runner():
     import os
@@ -98,7 +107,6 @@ def import_junit_test_runner():
             if not n:
                 self.generator.bld.fatal('no such junit directory %r' % self.generator.sourcepath_test)
             self.base = n
-
             self.inputs = n.ant_glob('**/*.java')
 
             ret = super(junit_test, self).runnable_status()
