@@ -6,10 +6,17 @@ VERSION = '1.0.0'
 MAIN_CLASS = 'com.example.Main'
 
 top = '.'
-out = 'build'
+out = OUTPUT_MAIN = 'build'
+
+
+def options(ctx):
+    pass
+
 
 def configure(ctx):
     ctx.load('java')
+    ctx.load('junit', tooldir = '.wscript')
+
 
 def build(ctx):
     ctx(name = 'make_directory',
@@ -30,20 +37,20 @@ def build(ctx):
 
     _copy_resources_task('src/main/resources', '')
 
-    ctx(name = 'compile_sources',
+    ctx(name = 'compile_and_test',
             features = 'javac junit',
-            sourcepath = ['src/main/java', 'src/main/resources'],
-            sourcepath_test = 'src/test/java',
-            classpath = [
-                    '.',
-                    '../lib/main/*',
-                    '../lib/test/*'
-            ],
-            compat = '1.8',
-            outdir = 'classes/main'
+            srcdir = 'src/main/java',
+            srcdir_test = 'src/test/java',
+            sourcepath = ['src/main/java'],
+            sourcepath_test = ['src/test/java'],
+            classpath = ['../lib/main/*'],
+            classpath_test = ['../lib/test/*'],
+            outdir = 'classes/main',
+            outdir_test = 'classes/test',
+            compat = '1.8'
     )
 
-    ctx(name = 'create_jar_file', use = 'compile_sources copy_resources',
+    ctx(name = 'create_jar_file', use = 'compile_and_test copy_resources',
             features = 'jar',
             basedir = 'classes/main',
             destfile = '%s-%s.jar' % (APPNAME, VERSION),
@@ -66,62 +73,12 @@ def build(ctx):
 
     _generate_javadoc_task('src/main/java')
 
+
 def dist(ctx):
     ctx.base_name = '%s-%s-sources' % (APPNAME, VERSION)
     ctx.algo = 'zip'
 
+
 def run_main(ctx):
     import subprocess
-    subprocess.call(['java', '-cp', 'lib/main/*:%s/%s-%s.jar' % (out, APPNAME, VERSION), MAIN_CLASS])
-
-def import_junit_test_runner():
-    import os
-    from waflib import Task, TaskGen, Utils, Options
-    from waflib.TaskGen import feature, before, after
-    from waflib.Configure import conf
-
-    JUNIT_RUNNER = 'org.junit.runner.JUnitCore'
-
-    def make_junit_task(self):
-        if not getattr(self, 'sourcepath_test', None):
-            return
-        junit_task = self.create_task('junit_test')
-        try:
-            junit_task.set_run_after(self.javac_task)
-        except:
-            pass
-
-    feature('junit')(make_junit_task)
-    after('apply_java', 'use_javac_files')(make_junit_task)
-
-    class junit_test(Task.Task):
-        color = 'YELLOW'
-        vars = []
-
-        def runnable_status(self):
-            for t in self.run_after:
-                if not t.hasrun:
-                    return Task.ASK_LATER
-
-            n = self.generator.path.find_dir(self.generator.sourcepath_test)
-            if not n:
-                self.generator.bld.fatal('no such junit directory %r' % self.generator.sourcepath_test)
-            self.base = n
-            self.inputs = n.ant_glob('**/*.java')
-
-            ret = super(junit_test, self).runnable_status()
-            if ret == Task.SKIP_ME:
-                if getattr(Options.option, 'junit', False):
-                    ret = Task.RUN_ME
-            return ret
-
-        def run(self):
-            cmd = []
-            cmd.extend(self.env.JAVA)
-            cmd.append('-classpath')
-            cmd.append(self.generator.javac_task.env.CLASSPATH + os.pathsep + self.generator.javac_task.env.OUTDIR)
-            cmd.append(JUNIT_RUNNER)
-            cmd.extend([x.path_from(self.base).replace('.java', '').replace(os.sep, '.') for x in self.inputs])
-            return self.exec_command(cmd)
-
-import_junit_test_runner()
+    subprocess.call(['java', '-cp', 'lib/main/*:%s/%s-%s.jar' % (OUTPUT_MAIN, APPNAME, VERSION), MAIN_CLASS])

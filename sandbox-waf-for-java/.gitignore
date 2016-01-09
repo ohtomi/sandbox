@@ -2,3 +2,4 @@ build
 logs
 .waf-*
 .lock-*
+*.pyc
