@@ -56,22 +56,17 @@ def build(ctx):
             destfile = '%s-%s.jar' % (APPNAME, VERSION),
     )
 
-    def _generate_javadoc_task(src_dir):
-        javadoc_packages = []
-
-        import os
-        for file in os.listdir(src_dir):
-            if os.path.isdir(os.path.join(src_dir, file)):
-                javadoc_packages.append(file)
-
-        ctx(name = 'generate_javadoc',
-                features = 'javadoc',
-                srcdir = src_dir,
-                javadoc_package = javadoc_packages,
-                javadoc_output = 'javadoc',
-        )
-
-    _generate_javadoc_task('src/main/java')
+    import os
+    javadoc_packages = []
+    for file in os.listdir('src/main/java'):
+        if os.path.isdir(os.path.join('src/main/java', file)):
+            javadoc_packages.append(file)
+    ctx(name = 'generate_javadoc',
+            features = 'javadoc',
+            srcdir = 'src/main/java',
+            javadoc_package = javadoc_packages,
+            javadoc_output = 'javadoc',
+    )
 
 
 def dist(ctx):

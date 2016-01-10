@@ -12,7 +12,7 @@ JUNIT_RUNNER = 'org.junit.runner.JUnitCore'
 
 @feature('junit')
 @after('apply_java', 'use_javac_files')
-def make_junit_compile_task(self):
+def compile_junit_tests_and_run_them(self):
     if not hasattr(self, 'srcdir_test'):
         return
     if not hasattr(self, 'outdir_test'):
@@ -22,48 +22,41 @@ def make_junit_compile_task(self):
     if not hasattr(self, 'classpath_test'):
         return
 
-    tmp = []
-    srcdir_test = getattr(self, 'srcdir_test', '')
-    if isinstance(srcdir_test, Node.Node):
-        srcdir_test = [srcdir_test]
-    for x in Utils.to_list(srcdir_test):
+    srcdir_test = []
+    for x in Utils.to_list(getattr(self, 'srcdir_test', '')):
         if isinstance(x, Node.Node):
             y = x
         else:
             y = self.path.find_dir(x)
             if not y:
                 self.bld.fatal('Could not find the folder %s from %s' % (x, self.path))
-        tmp.append(y)
-    self.srcdir_test = tmp
+        srcdir_test.append(y)
+    self.srcdir_test = srcdir_test
 
     outdir_test = getattr(self, 'outdir_test')
-    if outdir_test:
-        if not isinstance(outdir_test, Node.Node):
-            outdir_test = self.path.get_bld().make_node(self.outdir_test)
-    else:
-        outdir_test = self.path.get_bld()
+    if not isinstance(outdir_test, Node.Node):
+        outdir_test = self.path.get_bld().make_node(self.outdir_test)
     outdir_test.mkdir()
     self.outdir_test = outdir_test.abspath()
 
-    fold = [isinstance(x, Node.Node) and x or self.path.find_dir(x) for x in self.to_list(self.sourcepath_test)]
-    names = os.pathsep.join([x.srcpath() for x in fold])
-    self.sourcepath_test = names
+    nodes = [isinstance(x, Node.Node) and x or self.path.find_dir(x) for x in self.to_list(self.sourcepath_test)]
+    sourcepath_test = os.pathsep.join([x.srcpath() for x in nodes])
+    self.sourcepath_test = sourcepath_test
 
-    cps = os.pathsep.join(self.to_list(self.classpath_test))
-    self.classpath_test = cps + os.pathsep
+    classpath_test = os.pathsep.join(self.to_list(self.classpath_test)) + os.pathsep
+    self.classpath_test = classpath_test
 
-    junit_compile_task = self.create_task('junit_compile')
-    junit_run_task = self.create_task('junit_run')
+    compile_junit_test_task = self.create_task('compile_junit_test')
+    run_junit_test_task = self.create_task('run_junit_test')
     try:
-        junit_compile_task.set_run_after(self.javac_task)
-        junit_run_task.set_run_after(junit_compile_task)
+        compile_junit_test_task.set_run_after(self.javac_task)
+        run_junit_test_task.set_run_after(compile_junit_test_task)
     except:
         pass
 
 
-class junit_compile(Task.Task):
-    color = 'YELLOW'
-    vars = []
+class compile_junit_test(Task.Task):
+    color = 'BLUE'
 
     def runnable_status(self):
         for t in self.run_after:
@@ -81,7 +74,7 @@ class junit_compile(Task.Task):
         self.base = n
         self.inputs = n.ant_glob('**/*.java')
 
-        return super(junit_compile, self).runnable_status()
+        return super(compile_junit_test, self).runnable_status()
 
     def run(self):
         cmd = []
@@ -102,9 +95,8 @@ class junit_compile(Task.Task):
         return self.exec_command(cmd)
 
 
-class junit_run(Task.Task):
+class run_junit_test(Task.Task):
     color = 'YELLOW'
-    vars = []
 
     def runnable_status(self):
         for t in self.run_after:
@@ -117,7 +109,7 @@ class junit_run(Task.Task):
         self.base = n
         self.inputs = n.ant_glob('**/*.java')
 
-        return super(junit_run, self).runnable_status()
+        return super(run_junit_test, self).runnable_status()
 
     def run(self):
         cmd = []
