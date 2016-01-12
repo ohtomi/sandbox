@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
 APPNAME = 'example'
 VERSION = '1.0.0'
 MAIN_CLASS = 'com.example.Main'
@@ -19,22 +21,16 @@ def configure(ctx):
 
 
 def build(ctx):
-    ctx(name = 'make_directory',
-            rule = 'mkdir -p classes/main'
-    )
-
     def _copy_resources_task(current_dir, relative_dir):
-        import os
         for file in os.listdir(current_dir):
             if os.path.isdir(os.path.join(current_dir, file)):
                 _copy_resources_task(os.path.join(current_dir, file), os.path.join(relative_dir, file))
             else:
-                ctx(name = 'copy_resources', use = 'make_directory',
+                ctx(name = 'copy_resources',
                         rule = 'cp ${SRC} ${TGT}',
                         source = os.path.join(current_dir, file),
                         target = os.path.join('classes/main', relative_dir, file)
                 )
-
     _copy_resources_task('src/main/resources', '')
 
     ctx(name = 'compile_and_test',
@@ -56,7 +52,6 @@ def build(ctx):
             destfile = '%s-%s.jar' % (APPNAME, VERSION),
     )
 
-    import os
     javadoc_packages = []
     for file in os.listdir('src/main/java'):
         if os.path.isdir(os.path.join('src/main/java', file)):
