@@ -341,5 +341,15 @@
                 }
             }
         }
+    },
+    "Outputs" : {
+        "SSHToMongoClient" : {
+            "Description" : "SSH command to connect MongoClient",
+            "Value" : { "Fn::Join" : [ "", [
+                "ssh",
+                " -i ~/.ssh/", { "Ref" : "KeyName" }, ".pem",
+                " ec2-user@", { "Fn::GetAtt" : [ "MongoClient", "PublicIp" ]}
+            ]]}
+        }
     }
 }
