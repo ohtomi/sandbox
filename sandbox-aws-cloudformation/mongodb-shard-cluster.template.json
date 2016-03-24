@@ -166,9 +166,9 @@
             "Metadata" : {
                 "AWS::CloudFormation::Init" : {
                     "configSets" : {
-                        "default" : [ "setup-repos", "config" ]
+                        "default" : [ "SetupRepos", "Install" ]
                     },
-                    "setup-repos" : {
+                    "SetupRepos" : {
                         "files" : {
                             "/etc/yum.repos.d/mongodb-org-3.2.repo" : {
                                 "content" : { "Fn::Join" : [ "", [
@@ -189,7 +189,7 @@
                             }
                         }
                     },
-                    "config" : {
+                    "Install" : {
                         "packages" : {
                             "yum" : {
                                 "mongodb-org-mongos" : [],
@@ -206,12 +206,18 @@
             "Properties" : {
                 "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
                 "InstanceType" : { "Ref" : "ShardServerInstanceType" },
-                "SubnetId" : { "Ref" : "BackendSubnet" },
-                "PrivateIpAddress" : { "Fn::FindInMap" : [ "ServerToIp", "ShardServerClueter1Node1", "Ip" ]},
-                "KeyName" : { "Ref" : "KeyName" },
-                "SecurityGroupIds" : [
-                    { "Ref" : "VPCDefaultSecurityGroup" }
+                "NetworkInterfaces" : [
+                    {
+                        "DeviceIndex" : "0",
+                        "SubnetId" : { "Ref" : "BackendSubnet" },
+                        "GroupSet" : [
+                            { "Ref" : "VPCDefaultSecurityGroup" }
+                        ],
+                        "PrivateIpAddress" : { "Fn::FindInMap" : [ "ServerToIp", "ShardServerClueter1Node1", "Ip" ]},
+                        "AssociatePublicIpAddress" : "true"
+                    }
                 ],
+                "KeyName" : { "Ref" : "KeyName" },
                 "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                     "#!/bin/bash -xe\n",
                     "yum update -y aws-cfn-botstrap\n",
@@ -230,9 +236,9 @@
             "Metadata" : {
                 "AWS::CloudFormation::Init" : {
                     "configSets" : {
-                        "default" : [ "setup-repos", "config" ]
+                        "default" : [ "SetupRepos", "Install" ]
                     },
-                    "setup-repos" : {
+                    "SetupRepos" : {
                         "files" : {
                             "/etc/yum.repos.d/mongodb-org-3.2.repo" : {
                                 "content" : { "Fn::Join" : [ "", [
@@ -253,11 +259,12 @@
                             }
                         }
                     },
-                    "config" : {
+                    "Install" : {
                         "packages" : {
                             "yum" : {
-                                "mongodb-org-mongo" : [],
-                                "mongodb-org-shell" : []
+                                "mongodb-org-server" : [],
+                                "mongodb-org-shell" : [],
+                                "mongodb-org-tools" : []
                             }
                         }
                     }
@@ -269,12 +276,18 @@
             "Properties" : {
                 "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
                 "InstanceType" : { "Ref" : "ConfigServerInstanceType" },
-                "SubnetId" : { "Ref" : "BackendSubnet" },
-                "PrivateIpAddress" : { "Fn::FindInMap" : [ "ServerToIp", "ConfigServerNode1", "Ip" ]},
-                "KeyName" : { "Ref" : "KeyName" },
-                "SecurityGroupIds" : [
-                    { "Ref" : "VPCDefaultSecurityGroup" }
+                "NetworkInterfaces" : [
+                    {
+                        "DeviceIndex" : "0",
+                        "SubnetId" : { "Ref" : "BackendSubnet" },
+                        "PrivateIpAddress" : { "Fn::FindInMap" : [ "ServerToIp", "ConfigServerNode1", "Ip" ]},
+                        "GroupSet" : [
+                            { "Ref" : "VPCDefaultSecurityGroup" }
+                        ],
+                        "AssociatePublicIpAddress" : "true"
+                    }
                 ],
+                "KeyName" : { "Ref" : "KeyName" },
                 "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                     "#!/bin/bash -xe\n",
                     "yum update -y aws-cfn-botstrap\n",
@@ -293,9 +306,9 @@
             "Metadata" : {
                 "AWS::CloudFormation::Init" : {
                     "configSets" : {
-                        "default" : [ "setup-repos", "config" ]
+                        "default" : [ "SetupRepos", "Install" ]
                     },
-                    "setup-repos" : {
+                    "SetupRepos" : {
                         "files" : {
                             "/etc/yum.repos.d/mongodb-org-3.2.repo" : {
                                 "content" : { "Fn::Join" : [ "", [
@@ -316,11 +329,12 @@
                             }
                         }
                     },
-                    "config" : {
+                    "Install" : {
                         "packages" : {
                             "yum" : {
-                                "mongodb-org-mongo" : [],
-                                "mongodb-org-shell" : []
+                                "mongodb-org-server" : [],
+                                "mongodb-org-shell" : [],
+                                "mongodb-org-tools" : []
                             }
                         }
                     }
