@@ -32,7 +32,7 @@
             "BackendSubnet" : { "CIDR" : "10.0.1.0/24" }
         },
         "ServerToIp" : {
-            "ShardServerClueter1Node1" : { "Ip" : "10.0.1.1" },
+            "ShardServerClueter1Node1" : { "Ip" : "10.0.1.11" },
             "ConfigServerNode1" : { "Ip" : "10.0.1.101" }
         }
     },
@@ -136,12 +136,18 @@
             "Properties" : {
                 "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
                 "InstanceType" : { "Ref" : "MongoClientInstanceType" },
-                "SubnetId" : { "Ref" : "FrontendSubnet" },
-                "KeyName" : { "Ref" : "KeyName" },
-                "SecurityGroupIds" : [
-                    { "Ref" : "VPCDefaultSecurityGroup" },
-                    { "Ref" : "SSHSecurityGroup" }
+                "NetworkInterfaces" : [
+                    {
+                        "DeviceIndex" : "0",
+                        "SubnetId" : { "Ref" : "FrontendSubnet" },
+                        "GroupSet" : [
+                            { "Ref" : "VPCDefaultSecurityGroup" },
+                            { "Ref" : "SSHSecurityGroup" }
+                        ],
+                        "AssociatePublicIpAddress" : "true"
+                    }
                 ],
+                "KeyName" : { "Ref" : "KeyName" },
                 "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                     "#!/bin/bash -xe\n",
                     "yum update -y aws-cfn-botstrap\n",
