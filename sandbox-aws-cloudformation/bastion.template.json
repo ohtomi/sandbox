@@ -1,0 +1,125 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "Bastion Server template",
+    "Parameters" : {
+        "KeyName" : {
+            "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the web server",
+            "Type" : "String"
+        },
+        "InstanceType" : {
+            "Description" : "EC2 instance type for the bastion server",
+            "Default" : "t1.micro",
+            "Type" : "String"
+        },
+        "VPC" : {
+            "Description" : "VPC Id for the bastion server",
+            "Type" : "String"
+        },
+        "ApiServerSubnet" : {
+            "Description" : "Subnet Id for the bastion server",
+            "Type" : "String"
+        },
+        "VPCDefaultSecurityGroup" : {
+            "Description" : "Security Group Id for the bastion server",
+            "Type" : "String"
+        }
+    },
+    "Mappings" : {
+        "RegionToAMI" : {
+            "ap-northeast-1" : { "AMI" : "ami-a1bec3a0" }
+        }
+    },
+    "Resources" : {
+        "SSHSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" },
+                "GroupDescription" : "Enable SSH access via port 22",
+                "SecurityGroupIngress" : [
+                    { "IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : "0.0.0.0/0" }
+                ]
+            }
+        },
+        "GrowthForecastSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" },
+                "GroupDescription" : "Enable Web access to GrowthForecast UI via port 5125",
+                "SecurityGroupIngress" : [
+                    { "IpProtocol" : "tcp", "FromPort" : "5125", "ToPort" : "5125", "CidrIp" : "0.0.0.0/0" }
+                ]
+            }
+        },
+        "Bastion" : {
+            "Type" : "AWS::EC2::Instance",
+            "Properties" : {
+                "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
+                "InstanceType" : { "Ref" : "InstanceType" },
+                "SubnetId" : { "Ref" : "ApiServerSubnet" },
+                "SecurityGroupIds" : [
+                    { "Ref" : "VPCDefaultSecurityGroup" },
+                    { "Ref" : "SSHSecurityGroup" },
+                    { "Ref" : "GrowthForecastSecurityGroup" }
+                ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+                    "#!/bin/bash -xe\n",
+                    "yum update -y\n",
+                    "yum update -y aws-cfn-botstrap\n",
+
+                    "yum groupinstall -y \"Development Tools\"\n",
+                    "yum install -y pkgconfig glib2-devel gettext libxml2-devel pango-devel cairo-devel libyaml-devel\n",
+                    "yum install -y *YAML*\n",
+                    "yum install -y perl-ExtUtils-MakeMaker\n",
+                    "curl -L https://cpanmin.us | perl - --sudo App::cpanminus\n",
+                    "cpanm -n Fatal\n",
+                    "cpanm -n GrowthForecast\n",
+
+                    "/opt/aws/bin/cfn-init ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource Bastion",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n",
+
+                    "/opt/aws/bin/cfn-signal -e $? ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource Bastion",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n"
+                ]]}}
+            },
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "configSets" : {
+                        "default" : [ "SetupRepos", "Install" ]
+                    },
+                    "SetupRepos" : {
+                        "commands" : {
+                            "touch" : {
+                                "command" : "touch /root/cfn-init.touch.txt"
+                            }
+                        }
+                    },
+                    "Install" : {
+                    }
+                }
+            }
+        }
+    },
+    "Outputs" : {
+        "SSHToBastion" : {
+            "Description" : "SSH command to connect bastion server",
+            "Value" : { "Fn::Join" : [ "", [
+                "ssh",
+                " -i ~/.ssh/", { "Ref" : "KeyName" }, ".pem",
+                " ec2-user@", { "Fn::GetAtt" : [ "Bastion", "PublicIp" ]}
+            ]]}
+        },
+        "GrowthForecast" : {
+            "Description" : "-",
+            "Value" : { "Fn::Join" : [ "", [
+                "http://",
+                { "Fn::GetAtt" : [ "Bastion", "PublicIp" ]},
+                ":5125/"
+            ]]}
+        }
+    }
+}
