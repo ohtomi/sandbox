@@ -1,0 +1,141 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "VPC template",
+    "Parameters" : {
+    },
+    "Mappings" : {
+        "GroupToCIDR" : {
+            "VPC" : { "CIDR" : "10.104.0.0/16" },
+            "ApiServerSubnet" : { "CIDR" : "10.104.128.0/24" },
+            "ComputingServerSubnet" : { "CIDR" : "10.104.144.0/20" },
+            "MongoDBSubnet" : { "CIDR" : "10.104.129.0/24" }
+        }
+    },
+    "Resources" : {
+        "VPC" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : {
+                "CidrBlock" : { "Fn::FindInMap" : [ "GroupToCIDR", "VPC", "CIDR" ]},
+                "InstanceTenancy" : "default"
+            }
+        },
+        "InternetGateway" : {
+            "Type" : "AWS::EC2::InternetGateway"
+        },
+        "AttachGateway" : {
+            "Type" : "AWS::EC2::VPCGatewayAttachment",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" },
+                "InternetGatewayId" : { "Ref" : "InternetGateway" }
+            }
+        },
+        "PublicRouteTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "DependsOn" : "AttachGateway",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" }
+            }
+        },
+        "PrivateRouteTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "DependsOn" : "AttachGateway",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" }
+            }
+        },
+        "PublicRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : "AttachGateway",
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "PublicRouteTable" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "GatewayId" : { "Ref" : "InternetGateway" }
+            }
+        },
+        "ApiServerSubnet" : {
+            "Type" : "AWS::EC2::Subnet",
+            "DependsOn" : "AttachGateway",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" },
+                "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock" : { "Fn::FindInMap" : [ "GroupToCIDR", "ApiServerSubnet", "CIDR" ]},
+                "MapPublicIpOnLaunch" : "true"
+            }
+        },
+        "ComputingServerSubnet" : {
+            "Type" : "AWS::EC2::Subnet",
+            "DependsOn" : "AttachGateway",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" },
+                "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock" : { "Fn::FindInMap" : [ "GroupToCIDR", "ComputingServerSubnet", "CIDR" ]},
+                "MapPublicIpOnLaunch" : "true"
+            }
+        },
+        "MongoDBSubnet" : {
+            "Type" : "AWS::EC2::Subnet",
+            "DependsOn" : "AttachGateway",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" },
+                "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
+                "CidrBlock" : { "Fn::FindInMap" : [ "GroupToCIDR", "MongoDBSubnet", "CIDR" ]},
+                "MapPublicIpOnLaunch" : "true"
+            }
+        },
+        "ApiServerSubnetRouteTableAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "SubnetId" : { "Ref" : "ApiServerSubnet" },
+                "RouteTableId" : { "Ref" : "PublicRouteTable" }
+            }
+        },
+        "ComputingServerSubnetRouteTableAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "SubnetId" : { "Ref" : "ComputingServerSubnet" },
+                "RouteTableId" : { "Ref" : "PublicRouteTable" }
+            }
+        },
+        "MongoDBSubnetRouteTableAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "SubnetId" : { "Ref" : "MongoDBSubnet" },
+                "RouteTableId" : { "Ref" : "PublicRouteTable" }
+            }
+        },
+        "VPCDefaultSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "VpcId" : { "Ref" : "VPC" },
+                "GroupDescription" : "Allow all communications in VPC",
+                "SecurityGroupIngress" : [
+                    { "IpProtocol" : "tcp", "FromPort" : "0", "ToPort" : "65535", "CidrIp" : { "Fn::FindInMap" : [ "GroupToCIDR", "VPC", "CIDR" ]}},
+                    { "IpProtocol" : "udp", "FromPort" : "0", "ToPort" : "65535", "CidrIp" : { "Fn::FindInMap" : [ "GroupToCIDR", "VPC", "CIDR" ]}},
+                    { "IpProtocol" : "icmp", "FromPort" : "-1", "ToPort" : "-1", "CidrIp" : { "Fn::FindInMap" : [ "GroupToCIDR", "VPC", "CIDR" ]}}
+                ]
+            }
+        }
+    },
+    "Outputs" : {
+        "VpcId" : {
+            "Description" : "-",
+            "Value" : { "Ref" : "VPC" }
+        },
+        "ApiServerSubnet" : {
+            "Description" : "-",
+            "Value" : { "Ref" : "ApiServerSubnet" }
+        },
+        "ComputingServerSubnet" : {
+            "Description" : "-",
+            "Value" : { "Ref" : "ComputingServerSubnet" }
+        },
+        "MongoDBSubnet" : {
+            "Description" : "-",
+            "Value" : { "Ref" : "MongoDBSubnet" }
+        },
+        "VPCDefaultSecurityGroup" : {
+            "Description" : "-",
+            "Value" : { "Ref" : "VPCDefaultSecurityGroup" }
+        }
+    }
+}
