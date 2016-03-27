@@ -3,7 +3,7 @@
     "Description" : "Bastion Server template",
     "Parameters" : {
         "KeyName" : {
-            "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the web server",
+            "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the bastion server",
             "Type" : "String"
         },
         "InstanceType" : {
@@ -103,7 +103,7 @@
     },
     "Outputs" : {
         "SSHToBastion" : {
-            "Description" : "SSH command to connect bastion server",
+            "Description" : "SSH command to connect the bastion server",
             "Value" : { "Fn::Join" : [ "", [
                 "ssh",
                 " -i ~/.ssh/", { "Ref" : "KeyName" }, ".pem",
