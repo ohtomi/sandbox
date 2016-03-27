@@ -71,9 +71,9 @@
                     "yum install -y pkgconfig glib2-devel gettext libxml2-devel pango-devel cairo-devel libyaml-devel\n",
                     "yum install -y *YAML*\n",
                     "yum install -y perl-ExtUtils-MakeMaker\n",
-                    "curl -L https://cpanmin.us | perl - --sudo App::cpanminus\n",
-                    "cpanm -n Fatal\n",
-                    "cpanm -n GrowthForecast\n",
+                    "curl -L https://cpanmin.us | perl - App::cpanminus\n",
+                    "/usr/local/bin/cpanm -n Fatal\n",
+                    "/usr/local/bin/cpanm -n GrowthForecast\n",
 
                     "/opt/aws/bin/cfn-init ",
                     "    --stack ", { "Ref" : "AWS::StackId" },
@@ -89,16 +89,13 @@
             "Metadata" : {
                 "AWS::CloudFormation::Init" : {
                     "configSets" : {
-                        "default" : [ "SetupRepos", "Install" ]
+                        "default" : [ "SetupRepos", "Install", "Configure" ]
                     },
                     "SetupRepos" : {
-                        "commands" : {
-                            "touch" : {
-                                "command" : "touch /root/cfn-init.touch.txt"
-                            }
-                        }
                     },
                     "Install" : {
+                    },
+                    "Configure" : {
                     }
                 }
             }
