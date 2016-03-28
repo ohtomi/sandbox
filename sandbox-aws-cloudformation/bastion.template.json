@@ -27,6 +27,9 @@
     "Mappings" : {
         "RegionToAMI" : {
             "ap-northeast-1" : { "AMI" : "ami-a1bec3a0" }
+        },
+        "ContentToURL" : {
+            "epel" : { "URL" : "http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm" }
         }
     },
     "Resources" : {
@@ -75,6 +78,9 @@
                     "/usr/local/bin/cpanm -n Fatal\n",
                     "/usr/local/bin/cpanm -n GrowthForecast\n",
 
+                    "yum localinstall -y ", { "Fn::FindInMap" : [ "ContentToURL", "epel", "URL" ]}, "\n",
+                    "yum install -y ansible --enablerepo=epel\n",
+
                     "/opt/aws/bin/cfn-init ",
                     "    --stack ", { "Ref" : "AWS::StackId" },
                     "    --resource Bastion",
@@ -89,13 +95,15 @@
             "Metadata" : {
                 "AWS::CloudFormation::Init" : {
                     "configSets" : {
-                        "default" : [ "SetupRepos", "Install", "Configure" ]
+                        "default" : [ "SetupRepos", "Install", "Configure", "Start" ]
                     },
                     "SetupRepos" : {
                     },
                     "Install" : {
                     },
                     "Configure" : {
+                    },
+                    "Start" : {
                     }
                 }
             }
