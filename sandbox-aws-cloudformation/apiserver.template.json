@@ -81,6 +81,18 @@
                     },
                     "SetupRepos" : {
                         "files" : {
+                            "/etc/yum.repos.d/mongodb-org-3.2.repo" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "[mongodb-org-3.2]\n",
+                                    "name=MongoDB Repository\n",
+                                    "baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.2/x86_64/\n",
+                                    "gpgcheck=1\n",
+                                    "enabled=1\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            },
                             "/etc/yum.repos.d/td.repo" : {
                                 "content" : { "Fn::Join" : [ "", [
                                     "[treasuredata]\n",
@@ -101,6 +113,9 @@
                             }
                         },
                         "commands" : {
+                            "import_mongodb_public_key" : {
+                                "command" : "rpm --import https://www.mongodb.org/static/pgp/server-3.2.asc"
+                            },
                             "import_td-agent_GPG-KEY" : {
                                 "command" : "rpm --import https://packages.treasuredata.com/GPG-KEY-td-agent"
                             }
@@ -109,6 +124,9 @@
                     "Install" : {
                         "packages" : {
                             "yum" : {
+                                "mongodb-org-mongos" : [],
+                                "mongodb-org-shell" : [],
+                                "mongodb-org-tools" : [],
                                 "dstat" : [],
                                 "td-agent": []
                             }
@@ -179,7 +197,7 @@
                                     "<match perf.**>\n",
                                     "  type growthforecast\n",
                                     "  gfapi_url ", { "Ref" : "GrowthForecastURL" }, "\n",
-                                    "  service dstat\n",
+                                    "  service ", { "Fn::GetAtt" : [ "ApiServer", "PrivateIp" ]}, "\n",
                                     "  tag_for section\n",
                                     "  remove_prefix perf\n",
                                     "  name_key_pattern .*\n",
@@ -215,6 +233,10 @@
                 " -i ~/", { "Ref" : "KeyName" }, ".pem",
                 " ", { "Fn::GetAtt" : [ "ApiServer", "PrivateIp" ]}
             ]]}
+        },
+        "WebSocketToApiServer" : {
+            "Description" : "-",
+            "Value" : { "Fn::GetAtt" : [ "ApiServer", "PublicIp" ]}
         }
     }
 }

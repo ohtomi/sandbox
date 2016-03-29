@@ -22,39 +22,62 @@
         "InternetGateway" : {
             "Type" : "AWS::EC2::InternetGateway"
         },
-        "AttachGateway" : {
+        "AttachInternetGateway" : {
             "Type" : "AWS::EC2::VPCGatewayAttachment",
             "Properties" : {
                 "VpcId" : { "Ref" : "VPC" },
                 "InternetGatewayId" : { "Ref" : "InternetGateway" }
             }
         },
+        "NatGatewayEIP" : {
+            "Type" : "AWS::EC2::EIP",
+            "DependsOn" : "AttachInternetGateway",
+            "Properties" : {
+                "Domain" : "vpc"
+            }
+        },
+        "NatGateway" : {
+            "Type" : "AWS::EC2::NatGateway",
+            "Properties" : {
+                "AllocationId" : { "Fn::GetAtt" : [ "NatGatewayEIP", "AllocationId" ]},
+                "SubnetId" : { "Ref" : "ApiServerSubnet" }
+            }
+        },
         "PublicRouteTable" : {
             "Type" : "AWS::EC2::RouteTable",
-            "DependsOn" : "AttachGateway",
+            "DependsOn" : "AttachInternetGateway",
             "Properties" : {
                 "VpcId" : { "Ref" : "VPC" }
             }
         },
         "PrivateRouteTable" : {
             "Type" : "AWS::EC2::RouteTable",
-            "DependsOn" : "AttachGateway",
+            "DependsOn" : "AttachInternetGateway",
             "Properties" : {
                 "VpcId" : { "Ref" : "VPC" }
             }
         },
         "PublicRoute" : {
             "Type" : "AWS::EC2::Route",
-            "DependsOn" : "AttachGateway",
+            "DependsOn" : "AttachInternetGateway",
             "Properties" : {
                 "RouteTableId" : { "Ref" : "PublicRouteTable" },
                 "DestinationCidrBlock" : "0.0.0.0/0",
                 "GatewayId" : { "Ref" : "InternetGateway" }
             }
         },
+        "PrivateRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : "AttachInternetGateway",
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "PrivateRouteTable" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "NatGatewayId" : { "Ref" : "NatGateway" }
+            }
+        },
         "ApiServerSubnet" : {
             "Type" : "AWS::EC2::Subnet",
-            "DependsOn" : "AttachGateway",
+            "DependsOn" : "AttachInternetGateway",
             "Properties" : {
                 "VpcId" : { "Ref" : "VPC" },
                 "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
@@ -64,22 +87,22 @@
         },
         "ComputingServerSubnet" : {
             "Type" : "AWS::EC2::Subnet",
-            "DependsOn" : "AttachGateway",
+            "DependsOn" : "AttachInternetGateway",
             "Properties" : {
                 "VpcId" : { "Ref" : "VPC" },
                 "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
                 "CidrBlock" : { "Fn::FindInMap" : [ "GroupToCIDR", "ComputingServerSubnet", "CIDR" ]},
-                "MapPublicIpOnLaunch" : "true"
+                "MapPublicIpOnLaunch" : "false"
             }
         },
         "MongoDBSubnet" : {
             "Type" : "AWS::EC2::Subnet",
-            "DependsOn" : "AttachGateway",
+            "DependsOn" : "AttachInternetGateway",
             "Properties" : {
                 "VpcId" : { "Ref" : "VPC" },
                 "AvailabilityZone" : { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" }}]},
                 "CidrBlock" : { "Fn::FindInMap" : [ "GroupToCIDR", "MongoDBSubnet", "CIDR" ]},
-                "MapPublicIpOnLaunch" : "true"
+                "MapPublicIpOnLaunch" : "false"
             }
         },
         "ApiServerSubnetRouteTableAssociation" : {
@@ -93,14 +116,14 @@
             "Type" : "AWS::EC2::SubnetRouteTableAssociation",
             "Properties" : {
                 "SubnetId" : { "Ref" : "ComputingServerSubnet" },
-                "RouteTableId" : { "Ref" : "PublicRouteTable" }
+                "RouteTableId" : { "Ref" : "PrivateRouteTable" }
             }
         },
         "MongoDBSubnetRouteTableAssociation" : {
             "Type" : "AWS::EC2::SubnetRouteTableAssociation",
             "Properties" : {
                 "SubnetId" : { "Ref" : "MongoDBSubnet" },
-                "RouteTableId" : { "Ref" : "PublicRouteTable" }
+                "RouteTableId" : { "Ref" : "PrivateRouteTable" }
             }
         },
         "VPCDefaultSecurityGroup" : {
