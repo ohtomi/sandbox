@@ -197,7 +197,7 @@
                                     "<match perf.**>\n",
                                     "  type growthforecast\n",
                                     "  gfapi_url ", { "Ref" : "GrowthForecastURL" }, "\n",
-                                    "  service ", { "Fn::GetAtt" : [ "ApiServer", "PrivateIp" ]}, "\n",
+                                    "  service ApiServer\n",
                                     "  tag_for section\n",
                                     "  remove_prefix perf\n",
                                     "  name_key_pattern .*\n",
