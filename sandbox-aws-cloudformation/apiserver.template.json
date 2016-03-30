@@ -210,7 +210,7 @@
                         },
                         "commands" : {
                             "install_plugins" : {
-                                "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat fluent-plugin-map"
+                                "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat  fluent-plugin-jstat fluent-plugin-map fluent-plugin-forest"
                             }
                         }
                     },
