@@ -11,6 +11,13 @@
             "Default" : "t1.micro",
             "Type" : "String"
         },
+        "ComputingServerFleetSize" : {
+            "Description" : "Number of EC2 instances to launch for the computing server",
+            "Default" : "2",
+            "Type" : "Number",
+            "MaxValue" : "10",
+            "MinValue" : "1"
+        },
         "VPC" : {
             "Description" : "VPC Id for the computing server",
             "Type" : "String"
@@ -37,8 +44,23 @@
         }
     },
     "Resources" : {
-        "ComputingServer" : {
-            "Type" : "AWS::EC2::Instance",
+        "ComputingServerAutoScalingGroup" : {
+            "Type" : "AWS::AutoScaling::AutoScalingGroup",
+            "Properties" : {
+                "VPCZoneIdentifier" : [
+                    { "Ref" : "ComputingServerSubnet" }
+                ],
+                "LaunchConfigurationName" : { "Ref" : "ComputingServerLaunchConfig" },
+                "MinSize" : { "Ref" : "ComputingServerFleetSize" },
+                "MaxSize" : { "Ref" : "ComputingServerFleetSize" },
+                "DesiredCapacity" : { "Ref" : "ComputingServerFleetSize" },
+                "Tags" : [
+                    { "Key" : "ServerRole", "Value" : "ComputingServer", "PropagateAtLaunch" : "true" }
+                ]
+            }
+        },
+        "ComputingServerLaunchConfig" : {
+            "Type" : "AWS::AutoScaling::LaunchConfiguration",
             "Metadata" : {
                 "AWS::CloudFormation::Init" : {
                     "configSets" : {
@@ -194,14 +216,11 @@
             "Properties" : {
                 "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
                 "InstanceType" : { "Ref" : "InstanceType" },
-                "SecurityGroupIds" : [
+                "SecurityGroups" : [
                     { "Ref" : "VPCDefaultSecurityGroup" }
                 ],
                 "KeyName" : { "Ref" : "KeyName" },
-                "SubnetId" : { "Ref" : "ComputingServerSubnet" },
-                "Tags" : [
-                    { "Key" : "ServerRole", "Value" : "ComputingServer" }
-                ],
+                "InstanceMonitoring" : "false",
                 "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                     "#!/bin/bash -xe\n",
                     "yum update -y\n",
@@ -209,25 +228,17 @@
 
                     "/opt/aws/bin/cfn-init ",
                     "    --stack ", { "Ref" : "AWS::StackId" },
-                    "    --resource ComputingServer",
+                    "    --resource ComputingServerLaunchConfig",
                     "    --region ", { "Ref" : "AWS::Region" }, "\n",
 
                     "/opt/aws/bin/cfn-signal -e $? ",
                     "    --stack ", { "Ref" : "AWS::StackId" },
-                    "    --resource ComputingServer",
+                    "    --resource ComputingServerLaunchConfig",
                     "    --region ", { "Ref" : "AWS::Region" }, "\n"
                 ]]}}
             }
         }
     },
     "Outputs" : {
-        "SSHToComputingServer" : {
-            "Description" : "SSH command to connect the computing server via the bastion server",
-            "Value" : { "Fn::Join" : [ "", [
-                "ssh",
-                " -i ~/", { "Ref" : "KeyName" }, ".pem",
-                " ", { "Fn::GetAtt" : [ "ComputingServer", "PrivateIp" ]}
-            ]]}
-        }
     }
 }
