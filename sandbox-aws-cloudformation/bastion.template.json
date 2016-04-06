@@ -69,14 +69,14 @@
                             "/etc/mongos.conf" : {
                                 "content" : { "Fn::Join" : [ "", [
                                     "systemLog:\n",
-                                    "    destination: \"file\"\n",
+                                    "    destination: file\n",
                                     "    path: \"/var/log/mongodb/mongos.log\"\n",
-                                    "    logAppend: \"true\"\n",
+                                    "    logAppend: true\n",
                                     "processManagement:\n",
-                                    "    fork: \"true\"\n",
+                                    "    fork: true\n",
                                     "    pidFilePath: \"/var/run/mongodb/mongos.pid\"\n",
                                     "net:\n",
-                                    "    bindIp: \"0.0.0.0\"\n",
+                                    "    bindIp: 0.0.0.0\n",
                                     "    port: 27017\n",
                                     "sharding:\n",
                                     "    configDB: \"configReplSet/10.104.129.111:27017,10.104.129.112:27017,10.104.129.113:27017\"\n",
