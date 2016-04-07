@@ -1,0 +1,660 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "MongoDB Server (shardsvr) template",
+    "Parameters" : {
+        "KeyName" : {
+            "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the mongodb server via the bastion server",
+            "Type" : "String"
+        },
+        "InstanceType" : {
+            "Description" : "EC2 instance type for the mongodb server",
+            "Default" : "t1.micro",
+            "Type" : "String"
+        },
+        "VPC" : {
+            "Description" : "VPC Id for the mongodb server",
+            "Type" : "String"
+        },
+        "MongoDBSubnet" : {
+            "Description" : "Subnet Id for the mongodb server",
+            "Type" : "String"
+        },
+        "VPCDefaultSecurityGroup" : {
+            "Description" : "Security Group Id for the mongodb server",
+            "Type" : "String"
+        },
+        "GrowthForecastURL" : {
+            "Description" : "URL for GrowthForecast api endpoint",
+            "Type" : "String"
+        }
+    },
+    "Mappings" : {
+        "RegionToAMI" : {
+            "ap-northeast-1" : { "AMI" : "ami-a1bec3a0" }
+        },
+        "GroupNodeToIpAddress" : {
+            "ShardServerGroup1Node1" : { "IpAddress" : "10.104.129.11" },
+            "ShardServerGroup1Node2" : { "IpAddress" : "10.104.129.12" },
+            "ShardServerGroup1Node3" : { "IpAddress" : "10.104.129.13" }
+        }
+    },
+    "Resources" : {
+        "ShardServerGroup1Node1" : {
+            "Type" : "AWS::EC2::Instance",
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "configSets" : {
+                        "default" : [ "SetupRepos", "Install", "Configure", "Start" ]
+                    },
+                    "SetupRepos" : {
+                        "files" : {
+                            "/etc/yum.repos.d/mongodb-org-3.2.repo" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "[mongodb-org-3.2]\n",
+                                    "name=MongoDB Repository\n",
+                                    "baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.2/x86_64/\n",
+                                    "gpgcheck=1\n",
+                                    "enabled=1\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            },
+                            "/etc/yum.repos.d/td.repo" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "[treasuredata]\n",
+                                    "name=TreasureData\n",
+                                    "baseurl=http://packages.treasuredata.com/2/redhat/$releasever/$basearch\n",
+                                    "gpgcheck=1\n",
+                                    "gpgkey=https://packages.treasuredata.com/GPG-KEY-td-agent\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            }
+                        },
+                        "commands" : {
+                            "import_mongodb_public_key" : {
+                                "command" : "rpm --import https://www.mongodb.org/static/pgp/server-3.2.asc"
+                            },
+                            "import_td-agent_GPG-KEY" : {
+                                "command" : "rpm --import https://packages.treasuredata.com/GPG-KEY-td-agent"
+                            }
+                        }
+                    },
+                    "Install" : {
+                        "packages" : {
+                            "yum" : {
+                                "mongodb-org-server" : [],
+                                "mongodb-org-shell" : [],
+                                "mongodb-org-tools" : [],
+                                "dstat" : [],
+                                "td-agent": []
+                            }
+                        }
+                    },
+                    "Configure" : {
+                        "files" : {
+                            "/etc/mongod.conf" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "systemLog:\n",
+                                    "    destination: file\n",
+                                    "    path: \"/var/log/mongodb/mongod.log\"\n",
+                                    "    logAppend: true\n",
+                                    "storage:\n",
+                                    "    dbPath: \"/data/db\"\n",
+                                    "    journal:\n",
+                                    "        enabled: true\n",
+                                    "    engine: wiredTiger\n",
+                                    "operationProfiling:\n",
+                                    "    slowOpThresholdMs: 1000\n",
+                                    "    mode: slowOp\n",
+                                    "processManagement:\n",
+                                    "    fork: true\n",
+                                    "    pidFilePath: \"/var/run/mongodb/mongod.pid\"\n",
+                                    "net:\n",
+                                    "    bindIp: 0.0.0.0\n",
+                                    "    port: 27017\n",
+                                    "    maxIncomingConnections: 1000000\n",
+                                    "replication\n",
+                                    "    replSetName: sampleReplSet\n",
+                                    "sharding:\n",
+                                    "    clusterRole: shardsvr\n",
+                                    "\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            },
+                            "/etc/td-agent/td-agent.conf" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "<source>\n",
+                                    "  type dstat\n",
+                                    "  tag dstat\n",
+                                    "  option -cdnm --tcp --udp\n",
+                                    "  delay 10 # sec\n",
+                                    "</source>\n",
+                                    "\n",
+                                    "<match dstat>\n",
+                                    "  type copy\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.cpu\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"total_cpu_usage\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.dsk\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"dsk/total\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.mem\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"memory_usage\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.tcp-sockets\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"tcp_sockets\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.network\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"net/total\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.udp\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"udp\"]\n",
+                                    "  </store>\n",
+                                    "</match>\n",
+                                    "\n",
+                                    "<match perf.**>\n",
+                                    "  type forest\n",
+                                    "  subtype growthforecast\n",
+                                    "  <template>\n",
+                                    "    gfapi_url ", { "Ref" : "GrowthForecastURL" }, "\n",
+                                    "    service MongoDBServer_${hostname}\n",
+                                    "    tag_for section\n",
+                                    "    remove_prefix perf\n",
+                                    "    name_key_pattern .*\n",
+                                    "  </template>\n",
+                                    "</match>\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            }
+                        },
+                        "commands" : {
+                            "install_plugins" : {
+                                "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat fluent-plugin-map fluent-plugin-forest"
+                            }
+                        }
+                    },
+                    "Start" : {
+                        "services" : {
+                            "sysvinit" : {
+                                "mongod" : { "enabled" : "true", "ensureRunning": "true" },
+                                "td-agent" : { "enabled" : "true", "ensureRunning": "true" }
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties" : {
+                "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
+                "InstanceType" : { "Ref" : "InstanceType" },
+                "SecurityGroupIds" : [
+                    { "Ref" : "VPCDefaultSecurityGroup" }
+                ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "SubnetId" : { "Ref" : "MongoDBSubnet" },
+                "PrivateIpAddress" : { "Fn::FindInMap" : [ "GroupNodeToIpAddress", "ShardServerGroup1Node1", "IpAddress" ]},
+                "Tags" : [
+                    { "Key" : "ServerRole", "Value" : "MongoDBServer" },
+                    { "Key" : "ClusterRole", "Value" : "shardsvr" }
+                ],
+                "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+                    "#!/bin/bash -xe\n",
+                    "yum update -y\n",
+                    "yum update -y aws-cfn-botstrap\n",
+
+                    "/opt/aws/bin/cfn-init ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource ShardServerGroup1Node1",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n",
+
+                    "/opt/aws/bin/cfn-signal -e $? ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource ShardServerGroup1Node1",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n"
+                ]]}}
+            }
+        },
+        "ShardServerGroup1Node2" : {
+            "Type" : "AWS::EC2::Instance",
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "configSets" : {
+                        "default" : [ "SetupRepos", "Install", "Configure", "Start" ]
+                    },
+                    "SetupRepos" : {
+                        "files" : {
+                            "/etc/yum.repos.d/mongodb-org-3.2.repo" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "[mongodb-org-3.2]\n",
+                                    "name=MongoDB Repository\n",
+                                    "baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.2/x86_64/\n",
+                                    "gpgcheck=1\n",
+                                    "enabled=1\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            },
+                            "/etc/yum.repos.d/td.repo" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "[treasuredata]\n",
+                                    "name=TreasureData\n",
+                                    "baseurl=http://packages.treasuredata.com/2/redhat/$releasever/$basearch\n",
+                                    "gpgcheck=1\n",
+                                    "gpgkey=https://packages.treasuredata.com/GPG-KEY-td-agent\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            }
+                        },
+                        "commands" : {
+                            "import_mongodb_public_key" : {
+                                "command" : "rpm --import https://www.mongodb.org/static/pgp/server-3.2.asc"
+                            },
+                            "import_td-agent_GPG-KEY" : {
+                                "command" : "rpm --import https://packages.treasuredata.com/GPG-KEY-td-agent"
+                            }
+                        }
+                    },
+                    "Install" : {
+                        "packages" : {
+                            "yum" : {
+                                "mongodb-org-server" : [],
+                                "mongodb-org-shell" : [],
+                                "mongodb-org-tools" : [],
+                                "dstat" : [],
+                                "td-agent": []
+                            }
+                        }
+                    },
+                    "Configure" : {
+                        "files" : {
+                            "/etc/mongod.conf" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "systemLog:\n",
+                                    "    destination: file\n",
+                                    "    path: \"/var/log/mongodb/mongod.log\"\n",
+                                    "    logAppend: true\n",
+                                    "storage:\n",
+                                    "    dbPath: \"/data/db\"\n",
+                                    "    journal:\n",
+                                    "        enabled: true\n",
+                                    "    engine: wiredTiger\n",
+                                    "operationProfiling:\n",
+                                    "    slowOpThresholdMs: 1000\n",
+                                    "    mode: slowOp\n",
+                                    "processManagement:\n",
+                                    "    fork: true\n",
+                                    "    pidFilePath: \"/var/run/mongodb/mongod.pid\"\n",
+                                    "net:\n",
+                                    "    bindIp: 0.0.0.0\n",
+                                    "    port: 27017\n",
+                                    "    maxIncomingConnections: 1000000\n",
+                                    "replication\n",
+                                    "    replSetName: sampleReplSet\n",
+                                    "sharding:\n",
+                                    "    clusterRole: shardsvr\n",
+                                    "\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            },
+                            "/etc/td-agent/td-agent.conf" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "<source>\n",
+                                    "  type dstat\n",
+                                    "  tag dstat\n",
+                                    "  option -cdnm --tcp --udp\n",
+                                    "  delay 10 # sec\n",
+                                    "</source>\n",
+                                    "\n",
+                                    "<match dstat>\n",
+                                    "  type copy\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.cpu\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"total_cpu_usage\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.dsk\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"dsk/total\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.mem\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"memory_usage\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.tcp-sockets\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"tcp_sockets\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.network\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"net/total\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.udp\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"udp\"]\n",
+                                    "  </store>\n",
+                                    "</match>\n",
+                                    "\n",
+                                    "<match perf.**>\n",
+                                    "  type forest\n",
+                                    "  subtype growthforecast\n",
+                                    "  <template>\n",
+                                    "    gfapi_url ", { "Ref" : "GrowthForecastURL" }, "\n",
+                                    "    service MongoDBServer_${hostname}\n",
+                                    "    tag_for section\n",
+                                    "    remove_prefix perf\n",
+                                    "    name_key_pattern .*\n",
+                                    "  </template>\n",
+                                    "</match>\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            }
+                        },
+                        "commands" : {
+                            "install_plugins" : {
+                                "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat fluent-plugin-map fluent-plugin-forest"
+                            }
+                        }
+                    },
+                    "Start" : {
+                        "services" : {
+                            "sysvinit" : {
+                                "mongod" : { "enabled" : "true", "ensureRunning": "true" },
+                                "td-agent" : { "enabled" : "true", "ensureRunning": "true" }
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties" : {
+                "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
+                "InstanceType" : { "Ref" : "InstanceType" },
+                "SecurityGroupIds" : [
+                    { "Ref" : "VPCDefaultSecurityGroup" }
+                ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "SubnetId" : { "Ref" : "MongoDBSubnet" },
+                "PrivateIpAddress" : { "Fn::FindInMap" : [ "GroupNodeToIpAddress", "ShardServerGroup1Node2", "IpAddress" ]},
+                "Tags" : [
+                    { "Key" : "ServerRole", "Value" : "MongoDBServer" },
+                    { "Key" : "ClusterRole", "Value" : "shardsvr" }
+                ],
+                "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+                    "#!/bin/bash -xe\n",
+                    "yum update -y\n",
+                    "yum update -y aws-cfn-botstrap\n",
+
+                    "/opt/aws/bin/cfn-init ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource ShardServerGroup1Node2",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n",
+
+                    "/opt/aws/bin/cfn-signal -e $? ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource ShardServerGroup1Node2",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n"
+                ]]}}
+            }
+        },
+        "ShardServerGroup1Node3" : {
+            "Type" : "AWS::EC2::Instance",
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "configSets" : {
+                        "default" : [ "SetupRepos", "Install", "Configure", "Start" ]
+                    },
+                    "SetupRepos" : {
+                        "files" : {
+                            "/etc/yum.repos.d/mongodb-org-3.2.repo" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "[mongodb-org-3.2]\n",
+                                    "name=MongoDB Repository\n",
+                                    "baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.2/x86_64/\n",
+                                    "gpgcheck=1\n",
+                                    "enabled=1\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            },
+                            "/etc/yum.repos.d/td.repo" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "[treasuredata]\n",
+                                    "name=TreasureData\n",
+                                    "baseurl=http://packages.treasuredata.com/2/redhat/$releasever/$basearch\n",
+                                    "gpgcheck=1\n",
+                                    "gpgkey=https://packages.treasuredata.com/GPG-KEY-td-agent\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            }
+                        },
+                        "commands" : {
+                            "import_mongodb_public_key" : {
+                                "command" : "rpm --import https://www.mongodb.org/static/pgp/server-3.2.asc"
+                            },
+                            "import_td-agent_GPG-KEY" : {
+                                "command" : "rpm --import https://packages.treasuredata.com/GPG-KEY-td-agent"
+                            }
+                        }
+                    },
+                    "Install" : {
+                        "packages" : {
+                            "yum" : {
+                                "mongodb-org-server" : [],
+                                "mongodb-org-shell" : [],
+                                "mongodb-org-tools" : [],
+                                "dstat" : [],
+                                "td-agent": []
+                            }
+                        }
+                    },
+                    "Configure" : {
+                        "files" : {
+                            "/etc/mongod.conf" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "systemLog:\n",
+                                    "    destination: file\n",
+                                    "    path: \"/var/log/mongodb/mongod.log\"\n",
+                                    "    logAppend: true\n",
+                                    "storage:\n",
+                                    "    dbPath: \"/data/db\"\n",
+                                    "    journal:\n",
+                                    "        enabled: true\n",
+                                    "    engine: wiredTiger\n",
+                                    "operationProfiling:\n",
+                                    "    slowOpThresholdMs: 1000\n",
+                                    "    mode: slowOp\n",
+                                    "processManagement:\n",
+                                    "    fork: true\n",
+                                    "    pidFilePath: \"/var/run/mongodb/mongod.pid\"\n",
+                                    "net:\n",
+                                    "    bindIp: 0.0.0.0\n",
+                                    "    port: 27017\n",
+                                    "    maxIncomingConnections: 1000000\n",
+                                    "replication\n",
+                                    "    replSetName: sampleReplSet\n",
+                                    "sharding:\n",
+                                    "    clusterRole: shardsvr\n",
+                                    "\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            },
+                            "/etc/td-agent/td-agent.conf" : {
+                                "content" : { "Fn::Join" : [ "", [
+                                    "<source>\n",
+                                    "  type dstat\n",
+                                    "  tag dstat\n",
+                                    "  option -cdnm --tcp --udp\n",
+                                    "  delay 10 # sec\n",
+                                    "</source>\n",
+                                    "\n",
+                                    "<match dstat>\n",
+                                    "  type copy\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.cpu\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"total_cpu_usage\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.dsk\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"dsk/total\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.mem\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"memory_usage\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.tcp-sockets\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"tcp_sockets\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.network\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"net/total\"]\n",
+                                    "  </store>\n",
+                                    "\n",
+                                    "  <store>\n",
+                                    "    type map\n",
+                                    "    tag (\"perf.udp\")\n",
+                                    "    time time\n",
+                                    "    record record[\"dstat\"][\"udp\"]\n",
+                                    "  </store>\n",
+                                    "</match>\n",
+                                    "\n",
+                                    "<match perf.**>\n",
+                                    "  type forest\n",
+                                    "  subtype growthforecast\n",
+                                    "  <template>\n",
+                                    "    gfapi_url ", { "Ref" : "GrowthForecastURL" }, "\n",
+                                    "    service MongoDBServer_${hostname}\n",
+                                    "    tag_for section\n",
+                                    "    remove_prefix perf\n",
+                                    "    name_key_pattern .*\n",
+                                    "  </template>\n",
+                                    "</match>\n"
+                                ]]},
+                                "mode" : "000644",
+                                "owner" : "root",
+                                "group" : "root"
+                            }
+                        },
+                        "commands" : {
+                            "install_plugins" : {
+                                "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat fluent-plugin-map fluent-plugin-forest"
+                            }
+                        }
+                    },
+                    "Start" : {
+                        "services" : {
+                            "sysvinit" : {
+                                "mongod" : { "enabled" : "true", "ensureRunning": "true" },
+                                "td-agent" : { "enabled" : "true", "ensureRunning": "true" }
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties" : {
+                "ImageId" : { "Fn::FindInMap" : [ "RegionToAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
+                "InstanceType" : { "Ref" : "InstanceType" },
+                "SecurityGroupIds" : [
+                    { "Ref" : "VPCDefaultSecurityGroup" }
+                ],
+                "KeyName" : { "Ref" : "KeyName" },
+                "SubnetId" : { "Ref" : "MongoDBSubnet" },
+                "PrivateIpAddress" : { "Fn::FindInMap" : [ "GroupNodeToIpAddress", "ShardServerGroup1Node3", "IpAddress" ]},
+                "Tags" : [
+                    { "Key" : "ServerRole", "Value" : "MongoDBServer" },
+                    { "Key" : "ClusterRole", "Value" : "shardsvr" }
+                ],
+                "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+                    "#!/bin/bash -xe\n",
+                    "yum update -y\n",
+                    "yum update -y aws-cfn-botstrap\n",
+
+                    "/opt/aws/bin/cfn-init ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource ShardServerGroup1Node3",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n",
+
+                    "/opt/aws/bin/cfn-signal -e $? ",
+                    "    --stack ", { "Ref" : "AWS::StackId" },
+                    "    --resource ShardServerGroup1Node3",
+                    "    --region ", { "Ref" : "AWS::Region" }, "\n"
+                ]]}}
+            }
+        }
+    },
+    "Outputs" : {
+    }
+}
