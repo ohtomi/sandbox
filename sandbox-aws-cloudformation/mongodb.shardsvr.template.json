@@ -199,6 +199,9 @@
                             }
                         },
                         "commands" : {
+                            "make_directory" : {
+                                "command" : "mkdir -p /data/db; chmod 777 /data/db"
+                            },
                             "install_plugins" : {
                                 "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat fluent-plugin-map fluent-plugin-forest"
                             }
@@ -404,6 +407,9 @@
                             }
                         },
                         "commands" : {
+                            "make_directory" : {
+                                "command" : "mkdir -p /data/db; chmod 777 /data/db"
+                            },
                             "install_plugins" : {
                                 "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat fluent-plugin-map fluent-plugin-forest"
                             }
@@ -609,6 +615,9 @@
                             }
                         },
                         "commands" : {
+                            "make_directory" : {
+                                "command" : "mkdir -p /data/db; chmod 777 /data/db"
+                            },
                             "install_plugins" : {
                                 "command" : "td-agent-gem install fluent-plugin-growthforecast fluent-plugin-dstat fluent-plugin-map fluent-plugin-forest"
                             }
