@@ -1,0 +1,3 @@
+#!/bin/bash
+# see. http://muramasa64.fprog.org/diary/?date=20140904#p01
+aws ec2 describe-images --owner amazon --filters 'Name=name,Values=amzn-ami-hvm-*' 'Name=virtualization-type,Values=hvm' 'Name=root-device-type,Values=ebs' --query 'Images[].[Name, ImageId]' --output text
