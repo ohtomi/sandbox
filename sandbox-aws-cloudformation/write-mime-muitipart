@@ -7,7 +7,20 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 if len(sys.argv) == 1:
-    print("%s input-file:type ..." % (sys.argv[0]))
+    print('%s input-file:type ...' % (sys.argv[0]))
+
+    print('  type: http://cloudinit.readthedocs.org/en/latest/topics/format.html')
+    for format_type in [
+            'text/x-include-once-url',
+            'text/x-include-url',
+            'text/cloud-config-archive',
+            'text/upstart-job',
+            'text/cloud-config',
+            'text/part-handler',
+            'text/x-shellscript',
+            'text/cloud-boothook']:
+        print('    %s' % (format_type))
+
     sys.exit(1)
 
 combined_message = MIMEMultipart()
