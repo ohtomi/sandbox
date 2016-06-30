@@ -36,6 +36,12 @@ private open class Outer {
             println(outer.a + outer.b + outer.c + outer.d)
         }
     }
+
+    inner class Inner {
+        fun method() {
+            println(a + b + c + d)
+        }
+    }
 }
 
 private fun interfaces_scope(): Unit {
@@ -55,6 +61,9 @@ private fun interfaces_scope(): Unit {
             println(outer.c + outer.d)
         }
     }
+
+    val inner = Outer().Inner()
+    inner.method()
 }
 
 private val <T> List<T>.lastIndex: Int
@@ -123,6 +132,17 @@ private fun interface_extend(): Unit {
 
     MyClass.foo()
     MyClass.Companion.foo()
+
+    class MySet<E>(private val s: MutableSet<E>) : MutableSet<E> by s {
+        fun xxx() {
+            println("size: $size")
+        }
+    }
+
+    val s = MySet(mutableSetOf(1, 3, 5))
+    s.xxx()
+    s.add(77)
+    s.xxx()
 }
 
 
