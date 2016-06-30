@@ -235,6 +235,82 @@ fun classes_property(): Unit {
     println(user.age)
 }
 
+private enum class Direction {
+    NORTH, SOUTH, WEST, EAST
+}
+
+private enum class Color(val rgb: Int) {
+    RED(0xFF0000),
+    GREEN(0x00FF00),
+    BLUE(0x0000FF);
+
+    fun colorName(): String = "[[$name]]"
+}
+
+private enum class ProtocolState {
+    WAITING {
+        override fun signal() = TALKING
+    },
+    TALKING {
+        override fun signal() = WAITING
+    };
+
+    abstract fun signal(): ProtocolState
+}
+
+private fun classes_enum(): Unit {
+    println(Direction.SOUTH)
+    println(Color.BLUE.colorName())
+    for (state in ProtocolState.values()) {
+        println(state)
+    }
+    println(ProtocolState.valueOf("WAITING"))
+}
+
+private class DataProvider
+
+private object DataProviderManager {
+    fun registerDataProvider(provider: DataProvider) {
+    }
+}
+
+private class FactoryManager {
+    companion object Factory {
+        fun create() = "create"
+    }
+}
+
+private fun classes_object(): Unit {
+    open class A(val x: Int) {
+        open val y: Int = x
+    }
+
+    val newA = A(123)
+    val subA = object : A(123) {
+        override val y: Int
+            get() = x + 1000
+    }
+
+    println(newA.y)
+    println(subA.y)
+
+    val adhoc = object {
+        var x: Int = -1
+        val y: Int
+            get() = x + 2
+    }
+    println(adhoc.y)
+    adhoc.x -= 100
+    println(adhoc.y)
+
+    DataProviderManager.registerDataProvider(DataProvider())
+    println(DataProviderManager::class)
+
+    println(FactoryManager.create())
+    println(FactoryManager.Factory.create())
+    //println(FactoryManager.Companion.create())
+}
+
 
 fun classes_run(): Unit {
     println("---- Classes ----")
@@ -245,4 +321,6 @@ fun classes_run(): Unit {
     classes_abstract()
     classes_sealed()
     classes_property()
+    classes_enum()
+    classes_object()
 }
