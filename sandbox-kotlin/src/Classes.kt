@@ -1,4 +1,6 @@
 import java.util.*
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.internal.impl.javax.inject.Inject
 
 private fun classes_class_1(): Unit {
@@ -311,6 +313,43 @@ private fun classes_object(): Unit {
     //println(FactoryManager.Companion.create())
 }
 
+private fun classes_delegation(): Unit {
+    class Delegate {
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
+            return "$thisRef, thank you for delegating '${property.name}' to me"
+        }
+
+        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
+            println("$value has been assigned to '${property.name}' in $thisRef")
+        }
+    }
+
+    class Example {
+        var p: String by Delegate()
+        val lazyValue: String by lazy {
+            println("computed")
+            "Hello"
+        }
+        var name: String by Delegates.observable("<no name>") { prop, old, new ->
+            println("$old -> $new")
+        }
+        var age: Int by Delegates.vetoable(10) { prop, old, new ->
+            (old < new) and (0 < new)
+        }
+    }
+
+    val e = Example()
+    println(e.p)
+    e.p = "NEW"
+    println(e.lazyValue)
+    println(e.lazyValue)
+    e.name = "first"
+    e.name = "second"
+    println(e.age)
+    e.age = 9
+    println(e.age)
+}
+
 
 fun classes_run(): Unit {
     println("---- Classes ----")
@@ -323,4 +362,5 @@ fun classes_run(): Unit {
     classes_property()
     classes_enum()
     classes_object()
+    classes_delegation()
 }
