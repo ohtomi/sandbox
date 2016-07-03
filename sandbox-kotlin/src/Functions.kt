@@ -86,6 +86,103 @@ private fun functions_literal(): Unit {
 
     val m = max(arrayOf(1, 3, 9, 2, 3)) { a, b -> a < b }
     println("max $m")
+
+    var sum = 0
+    val ints = arrayOf(-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    ints.filter { it > 0 }.forEach { sum += it }
+    println(sum)
+
+    val intSum = fun Int.(other: Int): Int = this + other
+    println(1.intSum(3))
+
+    class HTML {
+        var name: String? = null
+
+        fun body(name: String) {
+            this.name = name
+        }
+
+        override fun toString(): String {
+            return "HTML($name)"
+        }
+    }
+
+    fun html(init: HTML.() -> Unit): HTML {
+        val html = HTML()
+        html.init()
+        return html
+    }
+
+    val dom = html {
+        body("my html")
+    }
+    println(dom)
+}
+
+private inline fun foo(fn: () -> Unit) {
+    //val x = fn
+    fn()
+}
+
+private inline fun bar(noinline fn: () -> Unit) {
+    val x = fn
+    x()
+}
+
+private fun baz(fn: () -> Unit) {
+    val x = fn
+    x()
+}
+
+private inline fun buz(crossinline fn: () -> Unit) {
+    //val x = fn
+    foo(fn)
+    //bar(fn)
+    //baz(fn)
+}
+
+private fun functions_inline(): Unit {
+    foo { println("inline") }
+    bar { println("noinline") }
+    buz { println("crossinline") }
+
+    baz {
+        println("local returning from baz")
+        return@baz
+    }
+    foo {
+        println("non-local returning from foo")
+        return
+    }
+    println("unreachable code")
+}
+
+private inline fun <reified T> hoge(): T {
+    val t = T::class.constructors.first()
+    return t.call()
+}
+
+private fun functions_reified(): Unit {
+    class A
+
+    val a = hoge<A>()
+    println(a)
+}
+
+private fun functions_component(): Unit {
+    data class Result(val result: Int, val status: String)
+
+    fun foo(x: Int, y: Int): Result {
+        return Result(x + y, "no error")
+    }
+
+    val (result, status) = foo(2, 3)
+    println("result: $result, status: $status")
+
+    val m = mapOf("name" to "kenichi", "age" to "9")
+    for ((key, value) in m) {
+        println("$key: $value")
+    }
 }
 
 
@@ -98,4 +195,7 @@ fun functions_run(): Unit {
     functions_tailrec()
     functions_higher_order()
     functions_literal()
+    functions_inline()
+    functions_reified()
+    functions_component()
 }
