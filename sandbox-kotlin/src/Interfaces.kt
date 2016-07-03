@@ -49,7 +49,7 @@ private fun interfaces_scope(): Unit {
         fun method() {
             val outer = Outer()
             val nested = Outer.Nested()
-            println(outer.b + outer.c + outer.d)
+            println(/*outer.b +*/ outer.c + outer.d) // TODO outer.b must be visible
             println(nested.e)
         }
     }
