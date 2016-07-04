@@ -47,9 +47,8 @@ private open class Outer {
 private fun interfaces_scope(): Unit {
     class Subclass : Outer() {
         fun method() {
-            val outer = Outer()
             val nested = Outer.Nested()
-            println(/*outer.b +*/ outer.c + outer.d) // TODO outer.b must be visible
+            println(b + c + d)
             println(nested.e)
         }
     }
@@ -100,17 +99,24 @@ private fun interface_extend(): Unit {
     fun C.bar() = "c"
     fun D.bar() = "d"
 
+    fun D.baz() = "d#baz"
+
     fun printD(c: C) {
         println(c.foo())
         if (c is D) {
-            val d = c as D
-            println(d.foo())
+            println(c.foo())
+            println((c as D).foo())
         }
 
         println(c.bar())
         if (c is D) {
-            val d = c as D
-            println(d.bar())
+            println(c.bar())
+            println((c as D).bar())
+        }
+
+        //println(c.baz())
+        if (c is D) {
+            println(c.baz())
         }
     }
 

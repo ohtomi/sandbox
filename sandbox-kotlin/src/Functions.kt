@@ -185,6 +185,18 @@ private fun functions_component(): Unit {
     }
 }
 
+private fun functions_range(): Unit {
+    val x = 12
+    for (n in 1..x) println("1..x $n")
+    for (n in 1.rangeTo(x)) println("1.rangeTo $n")
+    for (n in x.downTo(1)) println("x.downTo $n")
+    for (n in (1..x).reversed()) println("1..x reversed $n")
+    for (n in 1..x step 2) println("1..x step 2 $n")
+    for (n in 1..x step 3) println("1..x step 3 $n")
+    for (n in 1..x step 4) println("1..x step 4 $n")
+    for (n in 1..x step 4) println("1..x step 4 $n")
+}
+
 
 fun functions_run(): Unit {
     println("---- Functions ----")
@@ -198,4 +210,5 @@ fun functions_run(): Unit {
     functions_inline()
     functions_reified()
     functions_component()
+    functions_range()
 }
