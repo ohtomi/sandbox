@@ -169,7 +169,8 @@ fun classes_property(): Unit {
         var stringRepresentation: String
             get() = this.toString()
             set(value) {
-                field = "+" + value + "+"
+                field = "+$value+"
+                println(field)
             }
         var setterVisiblity: String = "abc"
             private set
@@ -181,7 +182,7 @@ fun classes_property(): Unit {
         val isEmpty: Boolean
             get() = inferredType != 1
 
-        val table: Map<String, Int>? = null
+        val table: MutableMap<String, Int>? = null
             get() {
                 if (field == null)
                     field = HashMap()
@@ -195,8 +196,17 @@ fun classes_property(): Unit {
         }
     }
 
-    val table = A().table
-    println(table)
+    val a = A()
+    println(a.stringRepresentation)
+    a.stringRepresentation = a.stringRepresentation
+    println(a.stringRepresentation)
+    //a.setterVisiblity = a.setterVisiblity
+    println(a.setterVisiblity)
+    //a.isEmpty = a.isEmpty
+    println(a.isEmpty)
+    println(a.table)
+    a.table?.put("key", 123)
+    println(a.table)
 
     class TestSubject {
         fun method() {
