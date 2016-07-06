@@ -147,7 +147,7 @@ sealed class Expr {
 }
 
 fun classes_sealed(): Unit {
-    fun eval(expr: Expr): Double = when (expr ) {
+    fun eval(expr: Expr): Double = when (expr) {
         is Expr.Const -> expr.number
         is Expr.Sum -> eval(expr.e1) + eval(expr.e2)
         Expr.NotANumber -> Double.NaN
@@ -169,7 +169,7 @@ fun classes_property(): Unit {
         var stringRepresentation: String
             get() = this.toString()
             set(value) {
-                field = "+" ; value + "+"
+                field = "+" + value + "+"
             }
         var setterVisiblity: String = "abc"
             private set
@@ -350,6 +350,42 @@ private fun classes_delegation(): Unit {
     println(e.age)
 }
 
+private fun classes_this(): Unit {
+    class A {
+        inner class B {
+            fun Int.foo() {
+                val a = this@A
+                val b = this@B
+
+                println(a.toString())
+                println(b.toString())
+
+                val c = this
+                val c1 = this@foo
+
+                println(c + 3)
+                println(c1 + 4)
+
+                val funLit = lambda@ fun String.() {
+                    val d = this
+                    println(d.toUpperCase())
+                }
+                funLit("abcde")
+
+                val funLit2 = { s: String ->
+                    val d1 = this
+                    println(d1 + 5)
+                }
+                funLit2("abcde")
+            }
+
+            fun bar(i: Int) = i.foo()
+        }
+    }
+
+    A().B().bar(5)
+}
+
 
 fun classes_run(): Unit {
     println("---- Classes ----")
@@ -363,4 +399,5 @@ fun classes_run(): Unit {
     classes_enum()
     classes_object()
     classes_delegation()
+    classes_this()
 }
