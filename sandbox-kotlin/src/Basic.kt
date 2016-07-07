@@ -141,6 +141,27 @@ private fun basic_statement(): Unit {
     } while (y != null)
 }
 
+private fun basic_operator_overload(): Unit {
+    data class BBB(val x: Int, val y: Int)
+
+    data class AAA(val x: Int, val y: Int) {
+        operator fun plus(other: AAA): AAA {
+            return AAA(x + other.x, y + other.y)
+        }
+
+        operator fun div(unit: Int): BBB {
+            return BBB(x / unit, y / unit)
+        }
+    }
+
+    val a1 = AAA(2, 3)
+    val a2 = AAA(4, 9)
+    val a3 = a1 + a2
+    println(a3)
+    val b = a3 / 3
+    println(b)
+}
+
 
 fun basic_run(): Unit {
     println("---- Basic ----")
@@ -152,4 +173,5 @@ fun basic_run(): Unit {
     basic_array()
     basic_string()
     basic_statement()
+    basic_operator_overload()
 }
