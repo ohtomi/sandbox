@@ -6,6 +6,7 @@ fun main(args: Array<String>): Unit {
     interfaces_run()
     generics_run()
     functions_run()
+    reflection_run()
 
     println("finish")
 }
