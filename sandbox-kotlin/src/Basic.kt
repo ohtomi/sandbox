@@ -141,6 +141,34 @@ private fun basic_statement(): Unit {
     } while (y != null)
 }
 
+data class X(val v: Int) : Comparable<X> {
+    override fun compareTo(other: X): Int {
+        return this.v - other.v
+    }
+
+    operator fun rangeTo(other: X): XRange {
+        return XRange(this, other)
+    }
+}
+
+class XRange(override val start: X, override val endInclusive: X) : ClosedRange<X>, Iterable<X> {
+    override fun iterator(): Iterator<X> {
+        return object : Iterator<X> {
+            var current: X = start
+
+            override fun next(): X {
+                val next = X(current.v)
+                current = X(current.v + 1)
+                return next
+            }
+
+            override fun hasNext(): Boolean {
+                return (current.compareTo(endInclusive)) <= 0
+            }
+        }
+    }
+}
+
 private fun basic_operator_overload(): Unit {
     data class BBB(val x: Int, val y: Int)
 
@@ -160,6 +188,10 @@ private fun basic_operator_overload(): Unit {
     println(a3)
     val b = a3 / 3
     println(b)
+
+    for (x in X(10)..X(14)) {
+        println(x)
+    }
 }
 
 
