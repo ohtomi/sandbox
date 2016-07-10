@@ -48,9 +48,63 @@ private fun reflection_reference(): Unit {
     println(ctorA(123, 456))
 }
 
+private data class MyHTML(val text: String, val children: MutableList<Any> = mutableListOf()) {
+    fun head(init: MyHEAD.() -> Unit): MyHEAD {
+        val head = MyHEAD("head")
+        head.init()
+        children.add(head)
+        return head
+    }
+
+    fun body(init: MyBODY.() -> Unit): MyBODY {
+        val body = MyBODY()
+        body.init()
+        children.add(body)
+        return body
+    }
+}
+
+private data class MyHEAD(val text: String)
+
+private data class MyBODY(val children: MutableList<Any> = mutableListOf()) {
+    fun div(init: MyDIV.() -> Unit): MyDIV {
+        val div = MyDIV()
+        div.init()
+        children.add(div)
+        return div
+    }
+}
+
+private data class MyDIV(val children: MutableList<Any> = mutableListOf())
+
+private fun reflection_builder(): Unit {
+    fun html(init: MyHTML.() -> Unit): MyHTML {
+        val html = MyHTML("html")
+        html.init()
+        return html
+    }
+
+    val doc = html {
+        head { }
+        body {
+            div {
+                children.add("---- div 1 ----")
+            }
+            div {
+                children.add("---- div 2 ----")
+            }
+            div {
+                children.add("---- div 3 ----")
+            }
+        }
+    }
+    println(doc)
+}
+
 fun reflection_run(): Unit {
     println("---- Reflection ----")
 
     reflection_annotation()
     reflection_reference()
+    reflection_builder()
 }
