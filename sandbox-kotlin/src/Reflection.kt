@@ -48,7 +48,11 @@ private fun reflection_reference(): Unit {
     println(ctorA(123, 456))
 }
 
-private data class MyHTML(val text: String, val children: MutableList<Any> = mutableListOf()) {
+private interface Renderable {
+    fun render(builder: StringBuilder)
+}
+
+private data class MyHTML(val text: String, val children: MutableList<Renderable> = mutableListOf()) : Renderable {
     fun head(init: MyHEAD.() -> Unit): MyHEAD {
         val head = MyHEAD("head")
         head.init()
@@ -62,20 +66,54 @@ private data class MyHTML(val text: String, val children: MutableList<Any> = mut
         children.add(body)
         return body
     }
+
+    override fun render(builder: StringBuilder) {
+        builder.append("{html: [")
+        children.map { it.render(builder) }
+        builder.append("]}")
+    }
 }
 
-private data class MyHEAD(val text: String)
+private data class MyHEAD(val text: String) : Renderable {
+    override fun render(builder: StringBuilder) {
+        builder.append("{head: '$text'}, ")
+    }
+}
 
-private data class MyBODY(val children: MutableList<Any> = mutableListOf()) {
+private data class MyBODY(val children: MutableList<Renderable> = mutableListOf()) : Renderable {
     fun div(init: MyDIV.() -> Unit): MyDIV {
         val div = MyDIV()
         div.init()
         children.add(div)
         return div
     }
+
+    override fun render(builder: StringBuilder) {
+        builder.append("{body:[")
+        children.map { it.render(builder) }
+        builder.append("]}")
+    }
 }
 
-private data class MyDIV(val children: MutableList<Any> = mutableListOf())
+private data class MyDIV(val children: MutableList<Renderable> = mutableListOf()) : Renderable {
+    operator fun String.unaryPlus(): MyTextNode {
+        val node = MyTextNode(this)
+        children.add(node)
+        return node
+    }
+
+    override fun render(builder: StringBuilder) {
+        builder.append("{div:")
+        children.map { it.render(builder) }
+        builder.append("}, ")
+    }
+}
+
+private data class MyTextNode(val text: String) : Renderable {
+    override fun render(builder: StringBuilder) {
+        builder.append("'$text'")
+    }
+}
 
 private fun reflection_builder(): Unit {
     fun html(init: MyHTML.() -> Unit): MyHTML {
@@ -87,18 +125,13 @@ private fun reflection_builder(): Unit {
     val doc = html {
         head { }
         body {
-            div {
-                children.add("---- div 1 ----")
-            }
-            div {
-                children.add("---- div 2 ----")
-            }
-            div {
-                children.add("---- div 3 ----")
-            }
+            div { +"---- div 1 ----" }
+            div { +"---- div 2 ----" }
+            div { +"---- div 3 ----" }
         }
     }
     println(doc)
+    println(StringBuilder().apply { doc.render(this) }.toString())
 }
 
 fun reflection_run(): Unit {
