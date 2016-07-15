@@ -194,6 +194,16 @@ private fun basic_operator_overload(): Unit {
     }
 }
 
+private fun basic_jvm(): Unit {
+    fun `is`(x: Int, y: Int): Boolean {
+        return x == y
+    }
+
+    val x = 3
+    val y = 3
+    println(`is`(x, y))
+}
+
 
 fun basic_run(): Unit {
     println("---- Basic ----")
@@ -206,4 +216,5 @@ fun basic_run(): Unit {
     basic_string()
     basic_statement()
     basic_operator_overload()
+    basic_jvm()
 }
