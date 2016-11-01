@@ -1,0 +1,32 @@
+---
+# This file is not included by default. It can be included via a task:
+# include: "packages_{{ ansible_os_family }}.yml"
+
+##
+# FIXME: Once Jenkins 2.0 is released, install all of this via their APT repo.
+# 
+# That will also install the dependencies automagically.
+##
+
+- name: Jenkins RPM Key
+  rpm_key:
+    key: "https://jenkins-ci.org/redhat/jenkins-ci.org.key"
+    state: present
+  become: true
+
+- name: Jenkins RPM Repository
+  yum_repository:
+    name: jenkinsrepo
+    description: Jenkins YUM repo
+    baseurl: http://pkg.jenkins.io/redhat
+    gpgcheck: yes
+    state: present
+  become: true
+
+- name: Jenkins Install
+  yum:
+    name: jenkins
+    # Setting this to 'latest' is perhaps debatable, but it seems silly not to
+    # since this plugin also updates all of the Jenkins plugins automatically.
+    state: latest
+  become: true
