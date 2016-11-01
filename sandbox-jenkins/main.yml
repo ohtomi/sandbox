@@ -1,3 +1,4 @@
 - hosts: targets
+  user: centos
   roles:
-    - ansible-jenkins2
+    - karlmdavis.jenkins2
