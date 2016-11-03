@@ -1,0 +1,5 @@
+- name: create group "{{centos_user_group_name}}"
+  group: name={{centos_user_group_name}} gid={{centos_user_group_id}} state=present
+
+- name: create user "{{centos_user_user_name}}"
+  user: name={{centos_user_user_name}} uid={{centos_user_user_id}} state=present group={{centos_user_group_name}}

@@ -1,4 +1,10 @@
 - hosts: targets
   user: centos
+  become: yes
+  vars:
+    centos_user_group_name: ohtomi
+    centos_user_group_id: 1919
+    centos_user_user_name: ohtomi
+    centos_user_user_id: 4519
   roles:
-    - karlmdavis.jenkins2
+    - ohtomi.ansible-role-centos-user
