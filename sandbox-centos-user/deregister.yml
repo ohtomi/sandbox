@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  tasks:
+    - name: register public key
+      authorized_key:
+        user: fuga
+        key: "{{ lookup('file', './fuga.pub') }}"
+        state: absent
+
+    - name: deregister user
+      user:
+        name: fuga
+        uid: 12345
+        state: absent
+
+    - name: revoke sudo to fuga
+      file:
+        path: /etc/sudoers.d/90-fuga
+        state: absent
+
+  become: yes

@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  tasks:
+    - name: register user
+      user:
+        name: fuga
+        uid: 12345
+
+    - name: register public key
+      authorized_key:
+        user: fuga
+        key: "{{ lookup('file', './fuga.pub') }}"
+
+    - name: grant sudo to fuga
+      copy:
+        dest: /etc/sudoers.d/90-fuga
+        content: 'fuga ALL=(ALL) NOPASSWD: ALL'
+        owner: root
+        group: root
+        mode: 0440
+
+  become: yes
