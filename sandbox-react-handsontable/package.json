@@ -1,0 +1,17 @@
+{
+  "name": "sandbox-react-handsontable",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "storybook": "start-storybook -p 9001 -c .storybook"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@storybook/react": "^3.2.3",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-handsontable": "^0.3.1"
+  }
+}
