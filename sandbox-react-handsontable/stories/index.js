@@ -32,6 +32,9 @@ class ExampleComponent extends React.Component {
     }
 
     afterColumnSort(column, sortOrder) {
+        // column is visual column index.
+        action('after column sort')(column, sortOrder);
+
         if (this.state.columnSorting.column === column && this.state.columnSorting.sortOrder === sortOrder) {
             return;
         }
@@ -103,6 +106,8 @@ class ExampleComponent extends React.Component {
         // columns are an array of physical column indexes. document bug?
         // target is visual column index.
         action('after column move')(columns.join(', '), target);
+
+        this.hot.hotInstance.updateSettings({});
     }
 
     afterColumnResize(column, width, isDoubleClick) {
@@ -119,15 +124,33 @@ class ExampleComponent extends React.Component {
             const range = Array.from({length: countCols}, (v, k) => k);
 
             range.forEach(column => {
-                tables.forEach((table, index) => {
-                    const hidden = this.state.hiddenColumns.some(hidden => column === hidden);
-                    const display = hidden ? 'none' : '';
 
+                const hidden = this.state.hiddenColumns.some(hidden => {
+                    const visual = this.hot.hotInstance.toVisualColumn(hidden);
+                    return visual === column;
+                });
+
+                tables.forEach((table, index) => {
+                    table.querySelectorAll(`col:nth-child(${column + 1})`).forEach(cell => {
+                        if (hidden) {
+                            cell.classList.add('hidden');
+                        } else {
+                            cell.classList.remove('hidden');
+                        }
+                    });
                     table.querySelectorAll(`th:nth-child(${column + 1})`).forEach(cell => {
-                        cell.style.display = display;
+                        if (hidden) {
+                            cell.classList.add('hidden');
+                        } else {
+                            cell.classList.remove('hidden');
+                        }
                     });
                     table.querySelectorAll(`td:nth-child(${column + 1})`).forEach(cell => {
-                        cell.style.display = display;
+                        if (hidden) {
+                            cell.classList.add('hidden');
+                        } else {
+                            cell.classList.remove('hidden');
+                        }
                     });
                 });
             });
@@ -139,7 +162,6 @@ class ExampleComponent extends React.Component {
         hiddenColumns.push(parseInt(this.input.value));
 
         this.setState({hiddenColumns: hiddenColumns});
-        // this.hot.hotInstance.updateSettings({});
     }
 
     onClickShowButton() {
@@ -147,7 +169,40 @@ class ExampleComponent extends React.Component {
         const hiddenColumns = this.state.hiddenColumns.filter(hidden => inputValue !== hidden);
 
         this.setState({hiddenColumns: hiddenColumns});
-        // this.hot.hotInstance.updateSettings({});
+    }
+
+    componentDidMount() {
+        const plugin = this.hot.hotInstance.getPlugin('ManualColumnMove');
+        action('debug')('plugin?', !!plugin);
+
+        if (plugin) {
+            const fn = (from, to) => {
+                let width = 0;
+
+                for (let i = from; i < to; i++) {
+                    let columnWidth = 0;
+
+                    const hidden = this.state.hiddenColumns.some(hidden => {
+                        const visual = this.hot.hotInstance.toVisualColumn(hidden);
+                        return visual === i;
+                    });
+
+                    if (hidden) {
+                        columnWidth = 0;
+                    } else if (i < 0) {
+                        columnWidth = this.hot.hotInstance.view.wt.wtTable.getColumnWidth(i) || 0;
+                    } else {
+                        columnWidth = this.hot.hotInstance.view.wt.wtTable.getStretchedColumnWidth(i) || 0;
+                    }
+
+                    width += columnWidth;
+                }
+
+                return width;
+            };
+
+            plugin.getColumnsWidth = fn.bind(this);
+        }
     }
 
     render() {
@@ -155,7 +210,7 @@ class ExampleComponent extends React.Component {
             <div id="example-component">
                 <HotTable ref={hot => this.hot = hot}
                           root="hot"
-                          data={this.data}
+                          data={this.data} maxRows={this.data.length}
                           columns={this.columns} colHeaders={this.colHeaders}
                           columnSorting={this.state.columnSorting} sortIndicator={true}
                           manualColumnMove={true} manualColumnResize={true}
@@ -166,7 +221,7 @@ class ExampleComponent extends React.Component {
                           afterColumnResize={this.afterColumnResize.bind(this)}
                           afterUpdateSettings={this.afterUpdateSettings.bind(this)}/>
                 <hr/>
-                <input ref={input => this.input = input} type="number" min={0} max={4} defaultValue={0} size={10}/>
+                <input ref={input => this.input = input} type="number" min={0} max={4} defaultValue={3} size={10}/>
                 <button onClick={this.onClickHideButton.bind(this)}>hide column</button>
                 <button onClick={this.onClickShowButton.bind(this)}>show column</button>
             </div>
