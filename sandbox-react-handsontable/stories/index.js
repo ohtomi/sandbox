@@ -26,6 +26,8 @@ class ExampleComponent extends React.Component {
         this.colHeaders = ['ID', 'NAME', 'YEAR', 'VOLUME', 'GOOD/BAD'];
 
         this.state = {
+            data: this.data,
+            maxRows: this.data.length,
             columnSorting: true,
             hiddenColumns: []
         };
@@ -111,6 +113,7 @@ class ExampleComponent extends React.Component {
     }
 
     afterColumnResize(column, width, isDoubleClick) {
+        // column is visual column index.
         action('after column resize')(column, width, isDoubleClick);
 
         this.hot.hotInstance.updateSettings({});
@@ -157,6 +160,15 @@ class ExampleComponent extends React.Component {
         });
     }
 
+    onClickMoveButton() {
+        const plugin = this.hot.hotInstance.getPlugin('ManualColumnMove');
+        action('debug')('plugin?', !!plugin);
+
+        if (plugin) {
+            plugin.moveColumn(3, 5);
+        }
+    }
+
     onClickHideButton() {
         const hiddenColumns = this.state.hiddenColumns.slice();
         hiddenColumns.push(parseInt(this.input.value));
@@ -169,6 +181,19 @@ class ExampleComponent extends React.Component {
         const hiddenColumns = this.state.hiddenColumns.filter(hidden => inputValue !== hidden);
 
         this.setState({hiddenColumns: hiddenColumns});
+    }
+
+    onClickAddDataButton() {
+        const data = this.state.data.slice();
+        data.push({
+            'id': 11 + (this.state.data.length - 4),
+            'name': 'new ford',
+            'year': 2019 + (this.state.data.length - 4),
+            'volume': 1000,
+            'good': true
+        });
+
+        this.setState({data: data, maxRows: data.length});
     }
 
     componentDidMount() {
@@ -210,26 +235,30 @@ class ExampleComponent extends React.Component {
             <div id="example-component">
                 <HotTable ref={hot => this.hot = hot}
                           root="hot"
-                          data={this.data} maxRows={this.data.length}
+                          data={this.state.data} maxRows={this.state.maxRows}
                           columns={this.columns} colHeaders={this.colHeaders}
                           columnSorting={this.state.columnSorting} sortIndicator={true}
                           manualColumnMove={true} manualColumnResize={true}
-                          width="600" height="150"
+                          width="600" height="300"
                           afterColumnSort={this.afterColumnSort.bind(this)}
                           beforeColumnMove={this.beforeColumnMove.bind(this)}
                           afterColumnMove={this.afterColumnMove.bind(this)}
                           afterColumnResize={this.afterColumnResize.bind(this)}
                           afterUpdateSettings={this.afterUpdateSettings.bind(this)}/>
                 <hr/>
+                <button onClick={this.onClickMoveButton.bind(this)}>move column</button>
+                {' | '}
                 <input ref={input => this.input = input} type="number" min={0} max={4} defaultValue={3} size={10}/>
                 <button onClick={this.onClickHideButton.bind(this)}>hide column</button>
                 <button onClick={this.onClickShowButton.bind(this)}>show column</button>
+                {' | '}
+                <button onClick={this.onClickAddDataButton.bind(this)}>add data</button>
             </div>
         );
     }
 }
 
 storiesOf('Handsontable', module)
-    .add('move and sort', () => (
+    .add('move, sort and hide', () => (
         <ExampleComponent/>
     ));
