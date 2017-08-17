@@ -13,5 +13,8 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-handsontable": "^0.3.1"
+  },
+  "dependencies": {
+    "react-resizable-box": "^2.0.6"
   }
 }
