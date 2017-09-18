@@ -1,4 +1,4 @@
-sconsole.warn('panel.js');
+console.warn('panel.js');
 
 chrome.devtools.network.onRequestFinished.addListener((req) => {
     const url = req.request.url;
@@ -14,9 +14,12 @@ chrome.devtools.network.onNavigated.addListener((url) => {
 });
 
 function notifyBackgroundMessage(message) {
-    console.log('from devtools.js', message);
+    console.log('from devtools.js to panel.js', message);
 }
 
 document.documentElement.onclick = () => {
-    respond('foo bar baz!');
+    respond({
+        text: 'foo bar baz!',
+        sentAt: new Date()
+    });
 };

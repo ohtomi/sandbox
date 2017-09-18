@@ -2,10 +2,10 @@ console.warn('background.js');
 
 chrome.runtime.onConnect.addListener((devToolsConnection) => {
     const devToolsListener = (message, sender, sendResponse) => {
-        console.log('from devtools.js', message);
+        console.log('from panel.js via devtools.js to background.js', message);
         devToolsConnection.postMessage({
             message: message,
-            receivedAt: new Date().getTime()
+            receivedAt: new Date()
         })
     };
 

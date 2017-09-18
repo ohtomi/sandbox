@@ -12,19 +12,21 @@ chrome.devtools.panels.create(
         });
 
         backgroundPageConnection.onMessage.addListener((message) => {
-            console.warn('from background.js', message);
+            console.warn('from background.js to devtools.js', message);
             if (_panelWindow) {
                 _panelWindow.notifyBackgroundMessage(message);
             }
         });
 
         const onShown = (panelWindow) => {
-            panel.onShown.removeEventListener(onShown);
+            panel.onShown.removeListener(onShown);
             _panelWindow = panelWindow;
             _panelWindow.respond = (message) => {
                 backgroundPageConnection.postMessage(message);
             };
         };
+
+        panel.onShown.addListener(onShown);
 
         // chrome.runtime.sendMessage({
         //     tabId: chrome.devtools.inspectedWindow.tabId
