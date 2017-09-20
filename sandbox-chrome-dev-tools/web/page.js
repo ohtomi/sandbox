@@ -1,10 +1,8 @@
+console.warn('page.js');
+
+// b-1. fire event
 setInterval(() => {
-    if (chrome.runtime) {
-        const message = {
-            text: 'from content',
-            at: new Date()
-        };
-        chrome.runtime.sendMessage('devtools-page', message);
-        console.warn('sent', message);
-    }
+    const event = document.createEvent('Event');
+    event.initEvent('hello');
+    document.dispatchEvent(event);
 }, 1000);

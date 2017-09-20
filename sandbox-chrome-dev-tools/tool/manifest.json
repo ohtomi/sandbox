@@ -1,5 +1,5 @@
 {
-    "name": "Twitter Detector",
+    "name": "sample",
     "manifest_version": 2,
     "version": "1",
     "devtools_page": "devtools.html",
@@ -7,5 +7,9 @@
         "scripts": [
             "background.js"
         ]
-    }
+    },
+    "permissions": [
+        "tabs",
+        "http://localhost:8080/*"
+    ]
 }
