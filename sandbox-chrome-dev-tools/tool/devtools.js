@@ -12,7 +12,7 @@ chrome.devtools.panels.create(
             name: 'devtools-page'
         });
 
-        // a-4. pass through message from panel
+        // a-4. pass through message from panel to background
         backgroundPageConnection.onMessage.addListener((message) => {
             console.warn('from background.js to devtools.js', message);
             if (_panelWindow) {
