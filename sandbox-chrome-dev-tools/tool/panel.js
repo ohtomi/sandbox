@@ -13,15 +13,7 @@ console.warn('panel.js');
 //     console.clear();
 // });
 
-// a-5. dump message
+// b-5. dump message
 function notifyBackgroundMessage(message) {
-    console.log('from devtools.js to panel.js', message);
+    console.warn('from devtools.js to panel.js', message);
 }
-
-// a-1. message to background via devtools
-document.documentElement.onclick = () => {
-    respond({
-        text: 'foo bar baz!',
-        sentAt: Date.now()
-    });
-};
