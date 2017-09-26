@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+// import React, { Component } from 'react';
+import React from 'react';
+import RX from 'reactxp';
 import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
+class App extends RX.Component {
   render() {
     return (
       <div className="App">
