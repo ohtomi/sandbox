@@ -57,6 +57,10 @@ class MainPanel extends RX.Component<MainPanelProps, null> {
     constructor() {
         super();
 
+        this.state = {
+            inputValue: ''
+        };
+
         this._translationValue = new RX.Animated.Value(-100);
         this._animatedStyle = RX.Styles.createAnimatedTextStyle({
             transform: [
@@ -95,6 +99,9 @@ class MainPanel extends RX.Component<MainPanelProps, null> {
                         View ReactXP documentation
                     </RX.Link>
 
+                    <RX.TextInput autoFocus={ true } placeholder={ '何かを入力すべし' }
+                        value={ this.state.inputValue } onChangeText={ this._onChangeText } />
+
                     <RX.Button style={ styles.roundButton } onPress={ this._onPressNavigate }>
                         <RX.Text style={ styles.buttonText }>
                             See More Examples
@@ -103,6 +110,10 @@ class MainPanel extends RX.Component<MainPanelProps, null> {
                 </RX.View>
             </RX.ScrollView>
         );
+    }
+
+    private _onChangeText = (newValue: string) => {
+        this.setState({inputValue: newValue});
     }
 
     private _onPressNavigate = () => {
