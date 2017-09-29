@@ -37,6 +37,9 @@ const styles = {
         color: 'blue',
         marginBottom: 16
     }),
+    inputBox: RX.Styles.createTextInputStyle({
+        width: 400
+    }),
     roundButton: RX.Styles.createViewStyle({
         margin: 16,
         borderRadius: 16,
@@ -99,7 +102,8 @@ class MainPanel extends RX.Component<MainPanelProps, null> {
                         View ReactXP documentation
                     </RX.Link>
 
-                    <RX.TextInput autoFocus={ true } placeholder={ '何かを入力すべし' }
+                    <RX.TextInput style={ styles.inputBox }
+                        autoFocus={ true } placeholder={ '何かを入力すべし' }
                         value={ this.state.inputValue } onChangeText={ this._onChangeText } />
 
                     <RX.Button style={ styles.roundButton } onPress={ this._onPressNavigate }>
