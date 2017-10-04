@@ -8,6 +8,12 @@ interface MainPanelProps {
     onPressNavigate: () => void;
 }
 
+interface MainPanelState {
+    inputValue: string;
+    selectedValue: string;
+    listItems: RX.Types.PickerPropsItem[];
+}
+
 const styles = {
     scroll: RX.Styles.createScrollViewStyle({
         alignSelf: 'stretch',
@@ -38,7 +44,15 @@ const styles = {
         marginBottom: 16
     }),
     inputBox: RX.Styles.createTextInputStyle({
-        width: 400
+        width: 400,
+        marginTop: 8,
+        marginBottom: 8,
+        padding: 4
+    }),
+    picker: RX.Styles.createPickerStyle({
+        width: 400,
+        marginTop: 8,
+        marginBottom: 8
     }),
     roundButton: RX.Styles.createViewStyle({
         margin: 16,
@@ -53,7 +67,7 @@ const styles = {
     })
 };
 
-class MainPanel extends RX.Component<MainPanelProps, null> {
+class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
     private _translationValue: RX.Animated.Value;
     private _animatedStyle: RX.Types.AnimatedTextStyleRuleSet;
 
@@ -61,7 +75,15 @@ class MainPanel extends RX.Component<MainPanelProps, null> {
         super();
 
         this.state = {
-            inputValue: ''
+            inputValue: '',
+            selectedValue: 'value-2',
+            listItems: [
+                {label: 'label-1', value: 'value-1'},
+                {label: 'label-2', value: 'value-2'},
+                {label: 'label-3', value: 'value-3'},
+                {label: 'label-4', value: 'value-4'},
+                {label: 'label-5', value: 'value-5'}
+            ]
         };
 
         this._translationValue = new RX.Animated.Value(-100);
@@ -105,6 +127,9 @@ class MainPanel extends RX.Component<MainPanelProps, null> {
                     <RX.TextInput style={ styles.inputBox }
                         autoFocus={ true } placeholder={ '何かを入力すべし' }
                         value={ this.state.inputValue } onChangeText={ this._onChangeText } />
+                    <RX.Picker style={ styles.picker }
+                        items={ this.state.listItems }
+                        selectedValue={ this.state.selectedValue } onValueChange={ this._onValueChange }/>
 
                     <RX.Button style={ styles.roundButton } onPress={ this._onPressNavigate }>
                         <RX.Text style={ styles.buttonText }>
@@ -117,7 +142,15 @@ class MainPanel extends RX.Component<MainPanelProps, null> {
     }
 
     private _onChangeText = (newValue: string) => {
-        this.setState({inputValue: newValue});
+        const newState = this.state;
+        newState.inputValue = newValue;
+        this.setState(newState);
+    }
+
+    private _onValueChange = (itemValue: string, itemPosition: number) => {
+        const newState = this.state;
+        newState.selectedValue = itemValue;
+        this.setState(newState);
     }
 
     private _onPressNavigate = () => {
