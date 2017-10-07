@@ -137,6 +137,12 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
                             See More Examples
                         </RX.Text>
                     </RX.Button>
+
+                    <RX.Button style={ styles.roundButton } onPress={ this._onPressAlert }>
+                        <RX.Text style={ styles.buttonText }>
+                            Open Alert
+                        </RX.Text>
+                    </RX.Button>
                 </RX.View>
             </RX.ScrollView>
         );
@@ -156,6 +162,10 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
 
     private _onPressNavigate = () => {
         this.props.onPressNavigate();
+    }
+
+    private _onPressAlert = () => {
+        RX.Alert.show('警告', `${new Date()} ダイアログメッセージ ダイアログメッセージ`);
     }
 }
 
