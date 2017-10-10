@@ -9,6 +9,7 @@ interface MainPanelProps {
 }
 
 interface MainPanelState {
+    markState: boolean;
     inputValue: string;
     selectedValue: string;
     listItems: RX.Types.PickerPropsItem[];
@@ -67,6 +68,17 @@ const styles = {
     })
 };
 
+const marks = {
+    closed: {
+        head: '\u25b8',
+        body: 'ほげ ふが ...'
+    },
+    opened: {
+        head: '\u25be',
+        body: 'ほげ ふが！！！\nふー ばー ばず！！！'
+    }
+};
+
 class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
     private _translationValue: RX.Animated.Value;
     private _animatedStyle: RX.Types.AnimatedTextStyleRuleSet;
@@ -75,14 +87,15 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
         super();
 
         this.state = {
+            markState: true,
             inputValue: '',
             selectedValue: 'value-2',
             listItems: [
-                {label: 'label-1', value: 'value-1'},
-                {label: 'label-2', value: 'value-2'},
-                {label: 'label-3', value: 'value-3'},
-                {label: 'label-4', value: 'value-4'},
-                {label: 'label-5', value: 'value-5'}
+                { label: 'label-1', value: 'value-1' },
+                { label: 'label-2', value: 'value-2' },
+                { label: 'label-3', value: 'value-3' },
+                { label: 'label-4', value: 'value-4' },
+                { label: 'label-5', value: 'value-5' }
             ]
         };
 
@@ -98,10 +111,10 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
 
     componentDidMount() {
         let animation = RX.Animated.timing(this._translationValue, {
-              toValue: 0,
-              easing: RX.Animated.Easing.OutBack(),
-              duration: 500
-            }
+            toValue: 0,
+            easing: RX.Animated.Easing.OutBack(),
+            duration: 500
+        }
         );
 
         animation.start();
@@ -109,43 +122,54 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
 
     render() {
         return (
-            <RX.ScrollView style={ styles.scroll }>
-                <RX.View style={ styles.container }>
-                    <RX.Animated.Text style={ [styles.helloWorld, this._animatedStyle] }>
+            <RX.ScrollView style={styles.scroll}>
+                <RX.View style={styles.container}>
+                    <RX.Animated.Text style={[styles.helloWorld, this._animatedStyle]}>
                         Hello World
                     </RX.Animated.Text>
-                    <RX.Text style={ styles.welcome }>
+                    <RX.Text style={styles.welcome}>
                         Welcome to ReactXP
                     </RX.Text>
-                    <RX.Text style={ styles.instructions }>
+                    <RX.Text style={styles.instructions}>
                         Edit App.tsx to get started
                     </RX.Text>
-                    <RX.Link style={ styles.docLink } url={ 'https://microsoft.github.io/reactxp/docs' }>
+                    <RX.Link style={styles.docLink} url={'https://microsoft.github.io/reactxp/docs'}>
                         View ReactXP documentation
                     </RX.Link>
 
-                    <RX.TextInput style={ styles.inputBox }
-                        autoFocus={ true } placeholder={ '何かを入力すべし' }
-                        value={ this.state.inputValue } onChangeText={ this._onChangeText } />
-                    <RX.Picker style={ styles.picker }
-                        items={ this.state.listItems }
-                        selectedValue={ this.state.selectedValue } onValueChange={ this._onValueChange }/>
+                    <RX.Text onPress={this._onPressClickableText}>
+                        {this.state.markState ? marks.closed.head : marks.opened.head}
+                        <RX.Text> {this.state.markState ? marks.closed.body : marks.opened.body}</RX.Text>
+                    </RX.Text>
 
-                    <RX.ActivityIndicator color=( 'black' } size={ 'tiny' } />
-                    <RX.Button style={ styles.roundButton } onPress={ this._onPressNavigate }>
-                        <RX.Text style={ styles.buttonText }>
+                    <RX.TextInput style={styles.inputBox}
+                        autoFocus={true} placeholder={'何かを入力すべし'}
+                        value={this.state.inputValue} onChangeText={this._onChangeText} />
+                    <RX.Picker style={styles.picker}
+                        items={this.state.listItems}
+                        selectedValue={this.state.selectedValue} onValueChange={this._onValueChange} />
+
+                    <RX.ActivityIndicator color=( 'black' } size={'tiny'} />
+                    <RX.Button style={styles.roundButton} onPress={this._onPressNavigate}>
+                        <RX.Text style={styles.buttonText}>
                             See More Examples
                         </RX.Text>
                     </RX.Button>
 
-                    <RX.Button style={ styles.roundButton } onPress={ this._onPressAlert }>
-                        <RX.Text style={ styles.buttonText }>
+                    <RX.Button style={styles.roundButton} onPress={this._onPressAlert}>
+                        <RX.Text style={styles.buttonText}>
                             Open Alert
                         </RX.Text>
                     </RX.Button>
                 </RX.View>
             </RX.ScrollView>
         );
+    }
+
+    private _onPressClickableText = (e: RX.Types.SyntheticEvent) => {
+        const newState = this.state;
+        newState.markState = !newState.markState;
+        this.setState(newState);
     }
 
     private _onChangeText = (newValue: string) => {
