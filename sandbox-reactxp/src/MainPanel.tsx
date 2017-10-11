@@ -25,6 +25,11 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center'
     }),
+    container2: RX.Styles.createViewStyle({
+        padding: 16,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start'
+    }),
     helloWorld: RX.Styles.createTextStyle({
         fontSize: 48,
         fontWeight: 'bold',
@@ -137,11 +142,6 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
                         View ReactXP documentation
                     </RX.Link>
 
-                    <RX.Text onPress={this._onPressClickableText}>
-                        {this.state.markState ? marks.closed.head : marks.opened.head}
-                        <RX.Text> {this.state.markState ? marks.closed.body : marks.opened.body}</RX.Text>
-                    </RX.Text>
-
                     <RX.TextInput style={styles.inputBox}
                         autoFocus={true} placeholder={'何かを入力すべし'}
                         value={this.state.inputValue} onChangeText={this._onChangeText} />
@@ -161,6 +161,13 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
                             Open Alert
                         </RX.Text>
                     </RX.Button>
+                </RX.View>
+                <hr/>
+                <RX.View style={styles.container2}>
+                    <RX.Text onPress={this._onPressClickableText}>
+                        {this.state.markState ? marks.closed.head : marks.opened.head}
+                        <RX.Text> {this.state.markState ? marks.closed.body : marks.opened.body}</RX.Text>
+                    </RX.Text>
                 </RX.View>
             </RX.ScrollView>
         );
