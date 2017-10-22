@@ -13,7 +13,7 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "outDir": "./dist/",
+    "outDir": "../tool/",
     "types": [
       "node"
     ]
