@@ -61087,7 +61087,9 @@ var RX = __webpack_require__(44);
 var App = __webpack_require__(275);
 RX.App.initialize(true, true);
 RX.UserInterface.setMainView(RX.createElement(App, null));
+console.log('from ReactXP!', RX, App);
 
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=bundle.js.map
