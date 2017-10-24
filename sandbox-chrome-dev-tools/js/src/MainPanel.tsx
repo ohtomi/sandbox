@@ -2,9 +2,11 @@
 * This file demonstrates a basic ReactXP app.
 */
 
+import EventEmitter = require('events');
 import RX = require('reactxp');
 
 interface MainPanelProps {
+    emitter: EventEmitter;
     onPressNavigate: () => void;
 }
 
@@ -115,6 +117,8 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
     }
 
     componentDidMount() {
+        this.props.emitter.on('from-devtools', this._onMessageFromDevTools);
+
         let animation = RX.Animated.timing(this._translationValue, {
             toValue: 0,
             easing: RX.Animated.Easing.OutBack(),
@@ -171,6 +175,15 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
                 </RX.View>
             </RX.ScrollView>
         );
+    }
+
+    private _onMessageFromDevTools = (message: any) => {
+        const newState = this.state;
+        newState.listItems.push({
+            label: new Date().toUTCString(),
+            value: JSON.stringify(message)
+        });
+        this.setState(newState);
     }
 
     private _onPressClickableText = (e: RX.Types.SyntheticEvent) => {

@@ -3,7 +3,7 @@ import * as webpack from 'webpack';
 const config: webpack.Configuration = {
     entry: "./src/index.tsx",
     output: {
-        filename: "bundle.js",
+        filename: "panel.js",
         path: __dirname + "/../tool"
     },
 

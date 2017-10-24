@@ -2,10 +2,15 @@
 * This file demonstrates a basic ReactXP app.
 */
 
+import EventEmitter = require('events');
 import RX = require('reactxp');
 
 import MainPanel = require('./MainPanel');
 import SecondPanel = require('./SecondPanel');
+
+interface AppProps {
+    emitter: EventEmitter;
+}
 
 enum NavigationRouteId {
     MainPanel,
@@ -18,7 +23,7 @@ const styles = {
     })
 };
 
-class App extends RX.Component<{}, null> {
+class App extends RX.Component<AppProps, null> {
     private _navigator: RX.Navigator;
 
     componentDidMount() {
@@ -45,7 +50,7 @@ class App extends RX.Component<{}, null> {
     private _renderScene = (navigatorRoute: RX.Types.NavigatorRoute) => {
         switch (navigatorRoute.routeId) {
             case NavigationRouteId.MainPanel:
-                return <MainPanel onPressNavigate={ this._onPressNavigate } />
+                return <MainPanel emitter={ this.props.emitter } onPressNavigate={ this._onPressNavigate } />
 
             case NavigationRouteId.SecondPanel:
                 return <SecondPanel onNavigateBack={ this._onPressBack } />
