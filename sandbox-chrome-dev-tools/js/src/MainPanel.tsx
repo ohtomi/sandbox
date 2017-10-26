@@ -15,14 +15,18 @@ interface MainPanelState {
 }
 
 const styles = {
-    scroll: RX.Styles.createScrollViewStyle({
-        alignSelf: 'stretch',
-        backgroundColor: '#f5fcff'
-    }),
     container: RX.Styles.createViewStyle({
+        alignSelf: 'stretch',
+        backgroundColor: '#f5fcff',
+        flex: 1,
+        flexDirection: 'row'
+    }),
+    container1: RX.Styles.createScrollViewStyle({
         padding: 16,
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start'
+        width: 300
+    }),
+    container2: RX.Styles.createScrollViewStyle({
+        padding: 16
     })
 };
 
@@ -44,30 +48,37 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
         const items = this.state.listItems.map((listItem, index) => {
             if (listItem.open) {
                 return (
-                    <RX.Text key={index} onPress={this._onPressClickableText.bind(this, index)}>
-                        {'\u25be '}
-                        <RX.Text>{listItem.date}</RX.Text>
-                        <br />
-                        {'  '}
-                        <RX.Text>{listItem.text}</RX.Text>
-                    </RX.Text>
+                    <p>
+                        <RX.Text key={index} onPress={this._onPressClickableText.bind(this, index)}>
+                            {'\u25be '}
+                            <RX.Text>{listItem.date}</RX.Text>
+                            <br />
+                            {'  '}
+                            <RX.Text>{listItem.text}</RX.Text>
+                        </RX.Text>
+                    </p>
                 );
             } else {
                 return (
-                    <RX.Text key={index} onPress={this._onPressClickableText.bind(this, index)}>
-                        {'\u25b8 '}
-                        <RX.Text>{listItem.date}</RX.Text>
-                    </RX.Text>
+                    <p>
+                        <RX.Text key={index} onPress={this._onPressClickableText.bind(this, index)}>
+                            {'\u25b8 '}
+                            <RX.Text>{listItem.date}</RX.Text>
+                        </RX.Text>
+                    </p>
                 );
             }
         });
 
         return (
-            <RX.ScrollView style={styles.scroll}>
-                <RX.View style={styles.container}>
+            <RX.View style={styles.container}>
+                <RX.View style={styles.container1}>
+                    <h4>{'h4'}</h4>
+                </RX.View>
+                <RX.ScrollView style={styles.container2}>
                     {items}
                 </RX.View>
-            </RX.ScrollView>
+            </RX.View>
         );
     }
 

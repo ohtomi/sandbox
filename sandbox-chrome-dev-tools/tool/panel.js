@@ -27633,14 +27633,18 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var RX = __webpack_require__(44);
 var styles = {
-    scroll: RX.Styles.createScrollViewStyle({
-        alignSelf: 'stretch',
-        backgroundColor: '#f5fcff'
-    }),
     container: RX.Styles.createViewStyle({
+        alignSelf: 'stretch',
+        backgroundColor: '#f5fcff',
+        flex: 1,
+        flexDirection: 'row'
+    }),
+    container1: RX.Styles.createScrollViewStyle({
         padding: 16,
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start'
+        width: 300
+    }),
+    container2: RX.Styles.createScrollViewStyle({
+        padding: 16
     })
 };
 var MainPanel = (function (_super) {
@@ -27673,21 +27677,25 @@ var MainPanel = (function (_super) {
         var _this = this;
         var items = this.state.listItems.map(function (listItem, index) {
             if (listItem.open) {
-                return (RX.createElement(RX.Text, { key: index, onPress: _this._onPressClickableText.bind(_this, index) },
-                    '\u25be ',
-                    RX.createElement(RX.Text, null, listItem.date),
-                    RX.createElement("br", null),
-                    '  ',
-                    RX.createElement(RX.Text, null, listItem.text)));
+                return (RX.createElement("p", null,
+                    RX.createElement(RX.Text, { key: index, onPress: _this._onPressClickableText.bind(_this, index) },
+                        '\u25be ',
+                        RX.createElement(RX.Text, null, listItem.date),
+                        RX.createElement("br", null),
+                        '  ',
+                        RX.createElement(RX.Text, null, listItem.text))));
             }
             else {
-                return (RX.createElement(RX.Text, { key: index, onPress: _this._onPressClickableText.bind(_this, index) },
-                    '\u25b8 ',
-                    RX.createElement(RX.Text, null, listItem.date)));
+                return (RX.createElement("p", null,
+                    RX.createElement(RX.Text, { key: index, onPress: _this._onPressClickableText.bind(_this, index) },
+                        '\u25b8 ',
+                        RX.createElement(RX.Text, null, listItem.date))));
             }
         });
-        return (RX.createElement(RX.ScrollView, { style: styles.scroll },
-            RX.createElement(RX.View, { style: styles.container }, items)));
+        return (RX.createElement(RX.View, { style: styles.container },
+            RX.createElement(RX.View, { style: styles.container1 },
+                RX.createElement("h4", null, 'h4')),
+            RX.createElement(RX.ScrollView, { style: styles.container2 }, items)));
     };
     return MainPanel;
 }(RX.Component));
