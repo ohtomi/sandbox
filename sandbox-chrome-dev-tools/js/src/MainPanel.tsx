@@ -73,7 +73,9 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
         return (
             <RX.View style={styles.container}>
                 <RX.View style={styles.container1}>
-                    <h4>{'h4'}</h4>
+                    <RX.Button onPress={this._onPressRequestButton.bind(this)}>
+                        {'Send Request'}
+                    </RX.Button>
                 </RX.View>
                 <RX.ScrollView style={styles.container2}>
                     {items}
@@ -90,6 +92,20 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
             text: JSON.stringify(message)
         });
         this.setState(newState);
+    }
+
+    private _onPressRequestButton = () => {
+        fetch('https://microsoft.github.io/reactxp/docs/components/button.html')
+            .then(res => res.text())
+            .then(text => {
+                const newState = this.state;
+                newState.listItems.push({
+                    open: false,
+                    date: new Date().toUTCString(),
+                    text: text.substring(0, 100)
+                });
+                this.setState(newState);
+            });
     }
 
     private _onPressClickableText = (index: number, e: RX.Types.SyntheticEvent) => {

@@ -27660,6 +27660,19 @@ var MainPanel = (function (_super) {
             });
             _this.setState(newState);
         };
+        _this._onPressRequestButton = function () {
+            fetch('https://microsoft.github.io/reactxp/docs/components/button.html')
+                .then(function (res) { return res.text(); })
+                .then(function (text) {
+                var newState = _this.state;
+                newState.listItems.push({
+                    open: false,
+                    date: new Date().toUTCString(),
+                    text: text.substring(0, 100)
+                });
+                _this.setState(newState);
+            });
+        };
         _this._onPressClickableText = function (index, e) {
             var newState = _this.state;
             newState.listItems[index].open = !newState.listItems[index].open;
@@ -27694,7 +27707,7 @@ var MainPanel = (function (_super) {
         });
         return (RX.createElement(RX.View, { style: styles.container },
             RX.createElement(RX.View, { style: styles.container1 },
-                RX.createElement("h4", null, 'h4')),
+                RX.createElement(RX.Button, { onPress: this._onPressRequestButton.bind(this) }, 'Send Request')),
             RX.createElement(RX.ScrollView, { style: styles.container2 }, items)));
     };
     return MainPanel;
