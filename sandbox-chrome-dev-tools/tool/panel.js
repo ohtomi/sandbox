@@ -27661,6 +27661,8 @@ var MainPanel = (function (_super) {
             _this.setState(newState);
         };
         _this._onPressRequestButton = function () {
+            alert('xxxx');
+            console.log('xxxx');
             fetch('https://microsoft.github.io/reactxp/docs/components/button.html')
                 .then(function (res) { return res.text(); })
                 .then(function (text) {

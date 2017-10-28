@@ -95,6 +95,9 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
     }
 
     private _onPressRequestButton = () => {
+        alert('xxxx');
+        console.log('xxxx');
+
         fetch('https://microsoft.github.io/reactxp/docs/components/button.html')
             .then(res => res.text())
             .then(text => {
