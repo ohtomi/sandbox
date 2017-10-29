@@ -21,9 +21,19 @@ const styles = {
         flex: 1,
         flexDirection: 'row'
     }),
-    container1: RX.Styles.createScrollViewStyle({
+    container1: RX.Styles.createViewStyle({
         padding: 16,
         width: 300
+    }),
+    form: RX.Styles.createViewStyle({
+        padding: 8,
+        maxHeight: 30,
+        backgroundColor: '#efefef',
+        flex: 1,
+        flexDirection: 'row'
+    }),
+    formLabel: RX.Styles.createViewStyle({
+        width: 80
     }),
     container2: RX.Styles.createScrollViewStyle({
         padding: 16
@@ -76,6 +86,14 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
                     <RX.Button onPress={this._onPressRequestButton.bind(this)}>
                         {'Send Request'}
                     </RX.Button>
+                    <RX.View style={styles.form}>
+                        <div style={styles.formLabel}>{'ID: '}</div>
+                        <div><RX.TextInput /></div>
+                    </RX.View>
+                    <RX.View style={styles.form}>
+                        <div style={styles.formLabel}>{'Password: '}</div>
+                        <RX.TextInput />
+                    </RX.View>
                 </RX.View>
                 <RX.ScrollView style={styles.container2}>
                     {items}

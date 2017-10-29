@@ -27639,9 +27639,19 @@ var styles = {
         flex: 1,
         flexDirection: 'row'
     }),
-    container1: RX.Styles.createScrollViewStyle({
+    container1: RX.Styles.createViewStyle({
         padding: 16,
         width: 300
+    }),
+    form: RX.Styles.createViewStyle({
+        padding: 8,
+        maxHeight: 30,
+        backgroundColor: '#efefef',
+        flex: 1,
+        flexDirection: 'row'
+    }),
+    formLabel: RX.Styles.createViewStyle({
+        width: 80
     }),
     container2: RX.Styles.createScrollViewStyle({
         padding: 16
@@ -27709,7 +27719,14 @@ var MainPanel = (function (_super) {
         });
         return (RX.createElement(RX.View, { style: styles.container },
             RX.createElement(RX.View, { style: styles.container1 },
-                RX.createElement(RX.Button, { onPress: this._onPressRequestButton.bind(this) }, 'Send Request')),
+                RX.createElement(RX.Button, { onPress: this._onPressRequestButton.bind(this) }, 'Send Request'),
+                RX.createElement(RX.View, { style: styles.form },
+                    RX.createElement("div", { style: styles.formLabel }, 'ID: '),
+                    RX.createElement("div", null,
+                        RX.createElement(RX.TextInput, null))),
+                RX.createElement(RX.View, { style: styles.form },
+                    RX.createElement("div", { style: styles.formLabel }, 'Password: '),
+                    RX.createElement(RX.TextInput, null))),
             RX.createElement(RX.ScrollView, { style: styles.container2 }, items)));
     };
     return MainPanel;
