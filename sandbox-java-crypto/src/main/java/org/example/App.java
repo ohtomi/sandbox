@@ -45,5 +45,17 @@ public class App {
         System.out.println(String.format("decrypted: '%s'", Base64.getEncoder().encodeToString(decrpypted)));
         System.out.println(String.format("   result: '%s'", result));
         System.out.println(String.format("            123456789 123456789 123456789 123456789"));
+
+        int loop = 100000;
+        byte[] headOfReturns = new byte[loop];
+        long from = System.currentTimeMillis();
+        for (int i = 0; i < loop; i++) {
+            byte[] ret = app.encrypt(String.format("hoge-%d", i).getBytes(StandardCharsets.UTF_8));
+            headOfReturns[i] = ret[0];
+        }
+        long to = System.currentTimeMillis();
+
+        System.out.println();
+        System.out.println(String.format("%d times, elapsed: %d msec,\nreturns: %s", loop, to - from, Base64.getEncoder().encodeToString(headOfReturns)));
     }
 }
