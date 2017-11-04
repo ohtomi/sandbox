@@ -28,7 +28,7 @@ public class Sandbox {
     private Object sandbox(PrivilegedExceptionAction<Object> action) throws PrivilegedActionException {
         Policy.setPolicy(new java.security.Policy() {
             @Override
-            public java.security.PermissionCollection getPermissions(java.security.ProtectionDomain domain) {
+            public java.security.PermissionCollection getPermissions(ProtectionDomain domain) {
                 Permissions permissions = new Permissions();
                 permissions.add(new AllPermission());
                 return permissions;
