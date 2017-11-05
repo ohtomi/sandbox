@@ -42,7 +42,12 @@ public class Sandbox {
         try {
             return AccessController.doPrivileged(action, context);
         } finally {
-            System.setSecurityManager(null);
+            try {
+                System.setSecurityManager(null);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+                throw e;
+            }
         }
     }
 }
