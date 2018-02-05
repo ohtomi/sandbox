@@ -3,14 +3,14 @@ export const ActionType = {
     DECREMENT: 'DECREMENT'
 };
 
-export function Increment() {
+export function increment() {
     return {
-        type: INCREMENT
+        type: ActionType.INCREMENT
     };
 }
 
-export function Decrement() {
+export function decrement() {
     return {
-        type: DECREMENT
+        type: ActionType.DECREMENT
     };
 }
