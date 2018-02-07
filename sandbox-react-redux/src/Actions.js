@@ -5,11 +5,9 @@ export const ActionType = {
 
 export function incrementAsync() {
     return (dispatch) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                dispatch(increment());
-            }, 1000);
-        });
+        setTimeout(() => {
+            dispatch(increment());
+        }, 1000);
     }
 }
 
