@@ -3,6 +3,16 @@ export const ActionType = {
     DECREMENT: 'DECREMENT'
 };
 
+export function incrementAsync() {
+    return (dispatch) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                dispatch(increment());
+            }, 1000);
+        });
+    }
+}
+
 export function increment() {
     return {
         type: ActionType.INCREMENT

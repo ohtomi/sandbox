@@ -5,7 +5,7 @@ import logo from './logo.svg';
 import './App.css';
 import * as Actions from './Actions';
 
-const App = ({ state, increment, decrement }) => {
+const App = ({ state, incrementAsync, decrement }) => {
   return (
     <div className="App">
       <header className="App-header">
@@ -14,7 +14,7 @@ const App = ({ state, increment, decrement }) => {
       </header>
       <p className="App-intro">
         current value: {state.value}<br />
-        <button onClick={() => { increment() }}>increment value</button><br />
+        <button onClick={() => { incrementAsync() }}>increment value</button><br />
         <button onClick={() => { decrement() }}>decrement value</button>
       </p>
     </div>
