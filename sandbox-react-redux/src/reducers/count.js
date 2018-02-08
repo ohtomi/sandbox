@@ -1,6 +1,6 @@
-import { ActionType } from './Actions';
+import { ActionType } from '../actions/count';
 
-function reducer(state = { value: 0 }, action) {
+function count(state = { value: 0 }, action) {
     switch (action.type) {
         case ActionType.INCREMENT:
             return { value: state.value + 1 };
@@ -11,4 +11,4 @@ function reducer(state = { value: 0 }, action) {
     }
 }
 
-export default reducer;
+export default count;
