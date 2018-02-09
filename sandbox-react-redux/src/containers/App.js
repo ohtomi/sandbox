@@ -4,6 +4,7 @@ import { connect, } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import * as count from '../actions/count';
+import * as calc from '../actions/calc';
 
 const mapStateToProps = (state) => {
   return { state };
@@ -12,7 +13,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     actions: {
-      count: { ...bindActionCreators(count, dispatch) }
+      count: { ...bindActionCreators(count, dispatch) },
+      calc: { ...bindActionCreators(calc, dispatch) }
     }
   };
 };

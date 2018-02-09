@@ -3,7 +3,9 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-const App = ({ state: { count: { value } }, actions: { count: { incrementAsync, decrement } } }) => {
+import { Op } from '../actions/calc';
+
+const App = ({ state: { count: { value }, calc: { op, answer, arg1, arg2 } }, actions: { count: { incrementAsync, decrement }, calc } }) => {
   return (
     <div className="App">
       <header className="App-header">
@@ -14,6 +16,16 @@ const App = ({ state: { count: { value } }, actions: { count: { incrementAsync, 
         current value: {value}<br />
         <button onClick={() => { incrementAsync() }}>increment value</button><br />
         <button onClick={() => { decrement() }}>decrement value</button>
+      </p>
+      <p className="App-intro">
+        <input type="number" value={answer} />
+        <span className="App-margin">=</span>
+        <input type="number" value={arg1} onChange={(ev) => { calc.update1(ev.target.value) }} />
+        <select className="App-margin" value={op} onChange={(ev) => { calc.selectOp(ev.target.value) }}>
+          <option value={Op.ADD}> + </option>
+          <option value={Op.SUBTRACT}> - </option>
+        </select>
+        <input type="number" value={arg2} onChange={(ev) => { calc.update2(ev.target.value) }} />
       </p>
     </div>
   );
