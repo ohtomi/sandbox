@@ -1,6 +1,10 @@
 import { ActionType } from '../actions/count';
 
-function count(state = { value: 0 }, action) {
+const initialState = {
+    value: 0
+};
+
+function count(state = initialState, action) {
     switch (action.type) {
         case ActionType.INCREMENT:
             return { value: state.value + 1 };
