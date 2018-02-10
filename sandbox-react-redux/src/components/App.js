@@ -5,12 +5,14 @@ import './App.css';
 
 import { Op } from '../calc/constants';
 
-const App = ({ state: { count: { value }, calc: { op, answer, arg1, arg2 } }, actions: { count: { incrementAsync, decrement }, calc } }) => {
+const App = ({ state: { count: { value }, calc: { op, answer, arg1, arg2 }, misc: { locked } }, actions: { count: { incrementAsync, decrement }, calc, misc } }) => {
   return (
-    <div className="App">
+    <div className={locked ? 'App App-locked' : 'App'}>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logo} className={locked ? 'App-logo App-locked' : 'App-logo'} alt="logo" />
         <h1 className="App-title">Welcome to React-Redux</h1>
+        <button disabled={locked} onClick={() => { misc.lockUi() }}>lock UI</button>
+        <button disabled={!locked} onClick={() => { misc.unlockUi() }}>unlock UI</button>
       </header>
       <p className="App-intro">
         current value: {value}<br />
