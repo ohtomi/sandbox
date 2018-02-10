@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppContainer from './containers/App';
+import AppContainer from './components/AppContainer';
 
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import reducers from './reducers/index';
+import reducers from './reducers';
 
 import './index.css';
 

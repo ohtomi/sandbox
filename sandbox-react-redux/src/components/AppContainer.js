@@ -3,8 +3,8 @@ import App from '../components/App';
 import { connect, } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as count from '../actions/count';
-import * as calc from '../actions/calc';
+import * as count from '../count/index';
+import * as calc from '../calc/index';
 
 const mapStateToProps = (state) => {
   return { state };

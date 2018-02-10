@@ -3,7 +3,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { Op } from '../actions/calc';
+import { Op } from '../calc/constants';
 
 const App = ({ state: { count: { value }, calc: { op, answer, arg1, arg2 } }, actions: { count: { incrementAsync, decrement }, calc } }) => {
   return (

@@ -1,4 +1,5 @@
-import { ActionType, Op } from '../actions/calc';
+import * as ActionType from '../actions';
+import { Op } from './constants';
 
 const initialState = {
     op: Op.ADD,
@@ -16,9 +17,9 @@ const answer = (op, arg1, arg2) => {
         default:
             return 0;
     }
-};
+}
 
-function calc(state = initialState, action) {
+export default function reducer(state = initialState, action) {
     switch (action.type) {
         case ActionType.SELECT_OP:
             return Object.assign({}, state, {
@@ -40,4 +41,23 @@ function calc(state = initialState, action) {
     }
 }
 
-export default calc;
+export function selectOp(op) {
+    return {
+        type: ActionType.SELECT_OP,
+        payload: { op }
+    };
+}
+
+export function update1(value) {
+    return {
+        type: ActionType.UPDATE1,
+        payload: { value }
+    }
+}
+
+export function update2(value) {
+    return {
+        type: ActionType.UPDATE2,
+        payload: { value }
+    }
+}
