@@ -2,7 +2,7 @@ export default function enhancer() {
     return (next) => (reducer, preloadedState) => {
         const initialState = Object.assign({}, preloadedState, loadState(restoreState));
         const store = next(reducer, initialState);
-        store.subscribe(() => saveState(store.getState()));
+        store.subscribe(() => saveState(store.getState(), filterState));
         return store;
     }
 }
@@ -13,15 +13,22 @@ const restoreState = (state) => {
     };
 }
 
-const loadState = (transform) => {
-    const state = {
-        locked: true
-    };
-    return transform(state);
+const filterState = (state) => {
+    return state.misc;
 }
 
-const saveState = (state) => {
-    if (state.misc) {
-        console.log(state.misc);
+const storageKey = 'sample';
+
+const loadState = (transform) => {
+    const saved = window.localStorage.getItem(storageKey);
+    if (saved) {
+        return transform(JSON.parse(saved));
+    }
+}
+
+const saveState = (state, transform) => {
+    const saving = transform(state);
+    if (saving) {
+        window.localStorage.setItem(storageKey, JSON.stringify(saving));
     }
 }
