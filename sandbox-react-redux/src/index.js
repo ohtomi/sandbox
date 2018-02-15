@@ -6,6 +6,8 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import logger from 'redux-logger'
+import { createHashHistory } from 'history';
+import middleware from './middleware';
 import enhancer from './enhancer';
 import reducers from './reducers';
 
@@ -13,11 +15,12 @@ import './index.css';
 
 import registerServiceWorker from './registerServiceWorker';
 
-let store = createStore(reducers, compose(applyMiddleware(thunkMiddleware, logger), enhancer()));
+let history = createHashHistory();
+let store = createStore(reducers, compose(applyMiddleware(middleware(history), thunkMiddleware, logger), enhancer()));
 
 ReactDOM.render(
     <Provider store={store}>
-        <AppContainer />
+        <AppContainer history={history} />
     </Provider>,
     document.getElementById('root')
 );
