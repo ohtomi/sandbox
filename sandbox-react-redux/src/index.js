@@ -11,6 +11,9 @@ import middleware from './middleware';
 import enhancer from './enhancer';
 import reducers from './reducers';
 
+import UniversalRouter from 'universal-router';
+import routes from './routes';
+
 import './index.css';
 
 import registerServiceWorker from './registerServiceWorker';
@@ -18,11 +21,20 @@ import registerServiceWorker from './registerServiceWorker';
 let history = createHashHistory();
 let store = createStore(reducers, compose(applyMiddleware(middleware(history), thunkMiddleware, logger), enhancer()));
 
-ReactDOM.render(
-    <Provider store={store}>
-        <AppContainer history={history} />
-    </Provider>,
-    document.getElementById('root')
-);
+const router = new UniversalRouter(routes);
+const renderer = (location) => {
+    router.resolve(location)
+        .then((route) => {
+            ReactDOM.render(
+                <Provider store={store}>
+                    <AppContainer routes={routes} history={history} route={route} />
+                </Provider>,
+                document.getElementById('root')
+            );
+        });
+}
+
+history.listen((location) => renderer(location));
+renderer(history.location);
 
 registerServiceWorker();
