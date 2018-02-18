@@ -1,5 +1,5 @@
-import React from 'react';
-import Link from './Link';
+import React from 'react'
+import Link from './Link'
 
 const PageBar = ({ state, actions }) => {
     return (
@@ -19,4 +19,4 @@ const PageBar = ({ state, actions }) => {
     );
 }
 
-export default PageBar;
+export default PageBar

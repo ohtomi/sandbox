@@ -1,5 +1,5 @@
-import React from 'react';
-import Link from './Link';
+import React from 'react'
+import Link from './Link'
 
 const PageRoot = ({ state, actions }) => {
     return (
@@ -19,4 +19,4 @@ const PageRoot = ({ state, actions }) => {
     );
 }
 
-export default PageRoot;
+export default PageRoot

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Link = ({ actions: { routing }, replace, dispatch, to, children }) => {
     const onClick = (ev) => {
@@ -16,4 +16,4 @@ const Link = ({ actions: { routing }, replace, dispatch, to, children }) => {
     );
 }
 
-export default Link;
+export default Link
