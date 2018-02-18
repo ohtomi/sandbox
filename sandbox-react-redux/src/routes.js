@@ -1,6 +1,6 @@
-import PageRoot from './components/PageRoot';
-import PageFoo from './components/PageFoo';
-import PageBar from './components/PageBar';
+import PageRoot from './components/Page/PageRoot'
+import PageFoo from './components/Page/PageFoo'
+import PageBar from './components/Page/PageBar'
 
 const routes = {
     path: '/',
@@ -9,19 +9,19 @@ const routes = {
         path: '/foo/:name',
         name: 'foo',
         action(context, params) {
-            return { Component: PageFoo };
+            return { Component: PageFoo }
         }
     }, {
         path: '/bar',
         name: 'bar',
         action(context) {
-            return { Component: PageBar };
+            return { Component: PageBar }
         }
     }],
     async action(context) {
-        const route = await context.next();
-        return route || { Component: PageRoot };
+        const route = await context.next()
+        return route || { Component: PageRoot }
     }
-};
+}
 
-export default routes;
+export default routes

@@ -1,21 +1,21 @@
-import * as ActionType from '../actions';
-import { Op } from './constants';
+import * as ActionType from '../actions'
+import { Op } from './constants'
 
 const initialState = {
     op: Op.ADD,
     answer: 10,
     arg1: 7,
     arg2: 3
-};
+}
 
 const answer = (op, arg1, arg2) => {
     switch (op) {
         case Op.ADD:
-            return arg1 + arg2;
+            return arg1 + arg2
         case Op.SUBTRACT:
-            return arg1 - arg2;
+            return arg1 - arg2
         default:
-            return 0;
+            return 0
     }
 }
 
@@ -25,19 +25,19 @@ export default function reducer(state = initialState, action) {
             return Object.assign({}, state, {
                 op: action.payload.op,
                 answer: answer(action.payload.op, state.arg1, state.arg2)
-            });
+            })
         case ActionType.UPDATE1:
             return Object.assign({}, state, {
                 arg1: +action.payload.value,
                 answer: answer(state.op, +action.payload.value, state.arg2)
-            });
+            })
         case ActionType.UPDATE2:
             return Object.assign({}, state, {
                 arg2: +action.payload.value,
                 answer: answer(state.op, state.arg1, +action.payload.value)
-            });
+            })
         default:
-            return state;
+            return state
     }
 }
 
@@ -45,7 +45,7 @@ export function selectOp(op) {
     return {
         type: ActionType.SELECT_OP,
         payload: { op }
-    };
+    }
 }
 
 export function update1(value) {

@@ -1,21 +1,21 @@
-import App from '../components/App';
+import App from '../components/App'
 
-import { compose, pure, lifecycle } from 'recompose';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { compose, pure, lifecycle } from 'recompose'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
-import * as count from '../count/index';
-import * as calc from '../calc/index';
-import * as misc from '../misc/index';
-import * as routing from '../routing/index';
+import * as count from '../count/index'
+import * as calc from '../calc/index'
+import * as misc from '../misc/index'
+import * as routing from '../routing/index'
 
 const mapStateToProps = (state, props) => {
-    const { history, route } = props;
+    const { history, route } = props
     return {
         state,
         history,
         route
-    };
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -26,7 +26,7 @@ const mapDispatchToProps = (dispatch) => {
             misc: bindActionCreators(misc, dispatch),
             routing: bindActionCreators(routing, dispatch)
         }
-    };
+    }
 }
 
 const enhance = compose(
@@ -34,12 +34,12 @@ const enhance = compose(
     pure,
     lifecycle({
         componentDidMount() {
-            const { history, actions: { routing } } = this.props;
-            history.listen((location) => routing.changeLocation(location));
+            const { history, actions: { routing } } = this.props
+            history.listen((location) => routing.changeLocation(location))
         }
     })
 );
 
-const AppContainer = enhance(App);
+const AppContainer = enhance(App)
 
-export default AppContainer;
+export default AppContainer
