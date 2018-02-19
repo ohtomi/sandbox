@@ -16,7 +16,7 @@ const PageRoot = ({ state, actions }) => {
             </Link>
             ]
         </React.Fragment>
-    );
+    )
 }
 
 export default PageRoot

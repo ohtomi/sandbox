@@ -16,7 +16,7 @@ const PageFoo = ({ state, actions }) => {
             </Link>
             ]
         </React.Fragment>
-    );
+    )
 }
 
 export default PageFoo

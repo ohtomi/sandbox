@@ -38,7 +38,7 @@ const enhance = compose(
             history.listen((location) => routing.changeLocation(location))
         }
     })
-);
+)
 
 const AppContainer = enhance(App)
 
