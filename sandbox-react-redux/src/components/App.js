@@ -1,26 +1,12 @@
 import React from 'react'
-import Header from './Layout/Header'
-import Content from './Layout/Content'
-import Count from './Layout/Count'
-import Calc from './Layout/Calc'
+import Layout from './Layout'
 
 import './App.css'
 
-const App = ({ state, actions, route: { Component } }) => {
+const App = (props) => {
     return (
-        <div className={state.misc.locked ? 'App App-locked' : 'App'}>
-            <Header {...{ state, actions }} />
-            <Content>
-                <Count {...{ state, actions }} />
-            </Content>
-            <Content>
-                <Calc {...{ state, actions }} />
-            </Content>
-            <Content>
-                <Component {...{ state, actions }} />
-            </Content>
-        </div>
-    );
+        <Layout {...props} />
+    )
 }
 
-export default App;
+export default App
