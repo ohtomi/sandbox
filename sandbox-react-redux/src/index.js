@@ -26,4 +26,10 @@ const renderer = (location) => {
 history.listen((location) => renderer(location))
 renderer(history.location)
 
+if (module.hot) {
+    module.hot.accept('./router.js', () => {
+        renderer(history.location)
+    })
+}
+
 registerServiceWorker()
