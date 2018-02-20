@@ -1,6 +1,6 @@
 import * as ActionType from './actions'
 
-export default middleware = (history) => {
+export default (history) => {
     return () => (next) => (action) => {
         switch (action.type) {
             case ActionType.PUSH_HISTORY:

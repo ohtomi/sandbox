@@ -19,7 +19,7 @@ const answer = (op, arg1, arg2) => {
     }
 }
 
-export default reducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
     switch (action.type) {
         case ActionType.SELECT_OP:
             return Object.assign({}, state, {

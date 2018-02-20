@@ -6,7 +6,7 @@ const initialState = {
     hash: ''
 }
 
-export default reducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
     switch (action.type) {
         case ActionType.CHANGE_LOCATION:
             return Object.assign({}, state, {

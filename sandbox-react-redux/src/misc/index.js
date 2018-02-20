@@ -4,7 +4,7 @@ const initialState = {
     locked: false
 }
 
-export default reducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
     switch (action.type) {
         case ActionType.LOCK_UI:
             return Object.assign({}, state, {

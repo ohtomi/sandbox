@@ -1,4 +1,4 @@
-export default enhancer = () => {
+export default () => {
     return (next) => (reducer, preloadedState) => {
         const initialState = Object.assign({}, preloadedState, loadState(restoreState))
         const store = next(reducer, initialState)
