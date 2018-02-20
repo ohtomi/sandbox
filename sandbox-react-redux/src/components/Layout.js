@@ -6,7 +6,7 @@ import Calc from './Layout/Calc'
 
 const Layout = ({ state, actions, route: { Component } }) => {
     return (
-        <div className={state.misc.locked ? 'App App-locked' : 'App'}>
+        <React.Fragment>
             <Header {...{ state, actions }} />
             <Content>
                 <Count {...{ state, actions }} />
@@ -17,7 +17,7 @@ const Layout = ({ state, actions, route: { Component } }) => {
             <Content>
                 <Component {...{ state, actions }} />
             </Content>
-        </div>
+        </React.Fragment>
     )
 }
 

@@ -4,8 +4,11 @@ import Layout from './Layout'
 import './App.css'
 
 const App = (props) => {
+    const { state: { misc: { locked } } } = props
     return (
-        <Layout {...props} />
+        <div className={locked ? 'App App-locked' : 'App'}>
+            <Layout {...props} />
+        </div>
     )
 }
 
