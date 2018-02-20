@@ -6,7 +6,7 @@ const initialState = {
     hash: ''
 }
 
-export default function reducer(state = initialState, action) {
+export default reducer = (state = initialState, action) => {
     switch (action.type) {
         case ActionType.CHANGE_LOCATION:
             return Object.assign({}, state, {
@@ -17,40 +17,40 @@ export default function reducer(state = initialState, action) {
     }
 }
 
-export function pushHistory(href) {
+export const pushHistory = (href) => {
     return {
         type: ActionType.PUSH_HISTORY,
         payload: { href }
     }
 }
 
-export function replaceHistory(href) {
+export const replaceHistory = (href) => {
     return {
         type: ActionType.REPLACE_HISTORY,
         payload: { href }
     }
 }
 
-export function goTo(index) {
+export const goTo = (index) => {
     return {
         type: ActionType.GO_TO,
         payload: { index }
     }
 }
 
-export function goBack() {
+export const goBack = () => {
     return {
         type: ActionType.GO_BACK
     }
 }
 
-export function goForward() {
+export const goForward = () => {
     return {
         type: ActionType.GO_FORWARD
     }
 }
 
-export function changeLocation({ pathname, search, hash }) {
+export const changeLocation = ({ pathname, search, hash }) => {
     return {
         type: ActionType.CHANGE_LOCATION,
         payload: { pathname, search, hash }

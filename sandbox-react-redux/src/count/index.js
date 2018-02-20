@@ -4,7 +4,7 @@ const initialState = {
     value: 0
 }
 
-export default function reducer(state = initialState, action) {
+export default reducer = (state = initialState, action) => {
     switch (action.type) {
         case ActionType.INCREMENT:
             return Object.assign({}, state, {
@@ -19,7 +19,7 @@ export default function reducer(state = initialState, action) {
     }
 }
 
-export function incrementAsync() {
+export const incrementAsync = () => {
     return (dispatch) => {
         setTimeout(() => {
             dispatch(increment())
@@ -27,13 +27,13 @@ export function incrementAsync() {
     }
 }
 
-export function increment() {
+export const increment = () => {
     return {
         type: ActionType.INCREMENT
     }
 }
 
-export function decrement() {
+export const decrement = () => {
     return {
         type: ActionType.DECREMENT
     }

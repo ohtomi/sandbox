@@ -19,7 +19,7 @@ const answer = (op, arg1, arg2) => {
     }
 }
 
-export default function reducer(state = initialState, action) {
+export default reducer = (state = initialState, action) => {
     switch (action.type) {
         case ActionType.SELECT_OP:
             return Object.assign({}, state, {
@@ -41,21 +41,21 @@ export default function reducer(state = initialState, action) {
     }
 }
 
-export function selectOp(op) {
+export const selectOp = (op) => {
     return {
         type: ActionType.SELECT_OP,
         payload: { op }
     }
 }
 
-export function update1(value) {
+export const update1 = (value) => {
     return {
         type: ActionType.UPDATE1,
         payload: { value }
     }
 }
 
-export function update2(value) {
+export const update2 = (value) => {
     return {
         type: ActionType.UPDATE2,
         payload: { value }
