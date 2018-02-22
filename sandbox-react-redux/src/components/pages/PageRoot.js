@@ -1,13 +1,13 @@
 import React from 'react'
-import Link from './Link'
+import Link from '../atoms/Link'
 
-const PageFoo = ({ state, actions }) => {
+const PageRoot = ({ state, actions }) => {
     return (
         <React.Fragment>
             [ {state.routing.pathname} ]
             [
-            <Link to="/" {...{ state, actions }}>
-                go to root
+            <Link to="/foo/12345" {...{ state, actions }}>
+                go to foo
             </Link>
             ]
             [
@@ -19,4 +19,4 @@ const PageFoo = ({ state, actions }) => {
     )
 }
 
-export default PageFoo
+export default PageRoot

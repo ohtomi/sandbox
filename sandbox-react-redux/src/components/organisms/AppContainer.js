@@ -1,13 +1,13 @@
-import App from '../components/App'
+import App from '../molecules/App'
 
 import { compose, pure, lifecycle } from 'recompose'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import * as count from '../count/index'
-import * as calc from '../calc/index'
-import * as misc from '../misc/index'
-import * as routing from '../routing/index'
+import * as count from '../../count/index'
+import * as calc from '../../calc/index'
+import * as misc from '../../misc/index'
+import * as routing from '../../routing/index'
 
 const mapStateToProps = (state, props) => {
     const { history, route } = props

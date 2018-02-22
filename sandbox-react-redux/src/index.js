@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import AppContainer from './components/AppContainer'
+import AppContainer from './components/organisms/AppContainer'
 
 import { Provider } from 'react-redux'
 import store from './store'

@@ -1,6 +1,6 @@
-import PageRoot from './components/Page/PageRoot'
-import PageFoo from './components/Page/PageFoo'
-import PageBar from './components/Page/PageBar'
+import PageRoot from './components/pages/PageRoot'
+import PageFoo from './components/pages/PageFoo'
+import PageBar from './components/pages/PageBar'
 
 const routes = {
     path: '/',
