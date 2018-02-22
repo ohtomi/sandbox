@@ -1,10 +1,8 @@
-export default () => {
-    return (next) => (reducer, preloadedState) => {
-        const initialState = Object.assign({}, preloadedState, loadState(restoreState))
-        const store = next(reducer, initialState)
-        store.subscribe(() => saveState(store.getState(), filterState))
-        return store
-    }
+export default () => (next) => (reducer, preloadedState) => {
+    const initialState = Object.assign({}, preloadedState, loadState(restoreState))
+    const store = next(reducer, initialState)
+    store.subscribe(() => saveState(store.getState(), filterState))
+    return store
 }
 
 const restoreState = (state) => {

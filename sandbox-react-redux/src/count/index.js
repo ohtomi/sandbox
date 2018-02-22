@@ -19,12 +19,10 @@ export default (state = initialState, action) => {
     }
 }
 
-export const incrementAsync = () => {
-    return (dispatch) => {
-        setTimeout(() => {
-            dispatch(increment())
-        }, 1000)
-    }
+export const incrementAsync = () => (dispatch) => {
+    setTimeout(() => {
+        dispatch(increment())
+    }, 1000)
 }
 
 export const increment = () => {
