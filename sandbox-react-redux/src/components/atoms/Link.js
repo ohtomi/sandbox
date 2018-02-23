@@ -1,12 +1,12 @@
 import React from 'react'
 
-const Link = ({ actions: { routing }, replace, dispatch, to, children }) => {
+const Link = ({ replaceHistory, pushHistory, replace, dispatch, to, children }) => {
     const onClick = (ev) => {
         ev.preventDefault()
         if (replace) {
-            routing.replaceHistory(to)
+            replaceHistory(to)
         } else {
-            routing.pushHistory(to)
+            pushHistory(to)
         }
     }
     return (

@@ -1,13 +1,11 @@
-import App from '../molecules/App'
+import App from './App'
 
 import { compose, pure, lifecycle } from 'recompose'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import * as count from '../../count/index'
-import * as calc from '../../calc/index'
-import * as misc from '../../misc/index'
-import * as routing from '../../routing/index'
+import * as misc from '../misc/index'
+import * as routing from '../routing/index'
 
 const mapStateToProps = (state, props) => {
     const { history, route } = props
@@ -21,8 +19,6 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         actions: {
-            count: bindActionCreators(count, dispatch),
-            calc: bindActionCreators(calc, dispatch),
             misc: bindActionCreators(misc, dispatch),
             routing: bindActionCreators(routing, dispatch)
         }
