@@ -18,6 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "flow": "flow",
+    "eslint": "eslint src/",
     "esdoc": "esdoc",
     "eject": "react-scripts eject"
   }
