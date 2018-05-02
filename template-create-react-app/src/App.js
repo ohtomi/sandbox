@@ -6,6 +6,9 @@ import './App.css';
 
 type Props = {};
 
+/**
+ * This is App.
+ */
 class App extends Component<Props> {
   render() {
     return (
