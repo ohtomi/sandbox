@@ -6,7 +6,7 @@
             "name": "esdoc-standard-plugin",
             "option": {
                 "test": {
-                    "source": "./test/",
+                    "source": "./src/",
                     "interfaces": [
                         "describe",
                         "it",
@@ -21,6 +21,24 @@
                         "\\.config\\.js$"
                     ]
                 }
+            }
+        },
+        {
+            "name": "esdoc-ecmascript-proposal-plugin",
+            "option": {
+                "all": true
+            }
+        },
+        {
+            "name": "esdoc-jsx-plugin",
+            "option": {
+                "enable": true
+            }
+        },
+        {
+            "name": "esdoc-flow-type-plugin",
+            "option": {
+                "enable": true
             }
         }
     ]

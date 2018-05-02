@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "esdoc": "^1.1.0",
+    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-flow-type-plugin": "^1.1.0",
+    "esdoc-jsx-plugin": "^1.0.0",
     "esdoc-standard-plugin": "^1.0.0",
     "flow-bin": "^0.71.0",
     "react": "^16.3.2",
