@@ -9,6 +9,7 @@
     "esdoc-jsx-plugin": "^1.0.0",
     "esdoc-standard-plugin": "^1.0.0",
     "flow-bin": "^0.71.0",
+    "prettier-eslint-cli": "^4.7.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4"
@@ -19,6 +20,7 @@
     "test": "react-scripts test --env=jsdom",
     "flow": "flow",
     "eslint": "eslint src/",
+    "prettier": "prettier-eslint --write 'src/**/*.js'",
     "esdoc": "esdoc",
     "eject": "react-scripts eject"
   }
