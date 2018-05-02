@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "esdoc": "^1.1.0",
+    "esdoc-standard-plugin": "^1.0.0",
     "flow-bin": "^0.71.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
@@ -13,6 +15,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "flow": "flow",
+    "esdoc": "esdoc",
     "eject": "react-scripts eject"
   }
 }
