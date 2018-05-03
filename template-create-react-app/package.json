@@ -19,6 +19,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "test:coverage": "react-scripts test --env=jsdom --coverage",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "flow": "flow",
     "eslint": "eslint src/",
