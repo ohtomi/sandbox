@@ -28,6 +28,8 @@
     "prettier": "prettier-eslint --write 'src/**/*.js'",
     "esdoc": "esdoc",
     "scss": "node-sass-chokidar scss/style.scss -o src/",
+    "fractal": "fractal start --sync",
+    "fractal:build": "fractal build",
     "eject": "react-scripts eject"
   }
 }
