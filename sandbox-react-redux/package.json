@@ -4,14 +4,14 @@
   "private": true,
   "dependencies": {
     "history": "^4.7.2",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-redux": "^5.0.6",
-    "react-scripts": "1.1.0",
-    "recompose": "^0.26.0",
-    "redux": "^3.7.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-redux": "^5.0.7",
+    "react-scripts": "^1.1.4",
+    "recompose": "^0.27.1",
+    "redux": "^4.0.0",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.2.0",
+    "redux-thunk": "^2.3.0",
     "universal-router": "^6.0.0"
   },
   "scripts": {
