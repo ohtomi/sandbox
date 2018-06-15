@@ -149,7 +149,7 @@ class MainPanel extends RX.Component<MainPanelProps, MainPanelState> {
                         items={this.state.listItems}
                         selectedValue={this.state.selectedValue} onValueChange={this._onValueChange} />
 
-                    <RX.ActivityIndicator color=( 'black' } size={'tiny'} />
+                    <RX.ActivityIndicator color={'black'} size={'tiny'} />
                     <RX.Button style={styles.roundButton} onPress={this._onPressNavigate}>
                         <RX.Text style={styles.buttonText}>
                             See More Examples
