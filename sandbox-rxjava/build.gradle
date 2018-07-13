@@ -1,141 +1,184 @@
-plugins {
-  id 'java'
-  id 'application'
-  id 'eu.appsatori.fatjar' version '0.3'
-  id 'checkstyle'
-  id 'findbugs'
-  id 'jacoco'
-}
-
-/*
- * java plugin settings
- */
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
-processResources {
-  project.ext['native2ascii.target.extensions'].tokenize(',').each {
-    filesMatching('**/*.' + it) {
-      filter(org.apache.tools.ant.filters.EscapeUnicode)
+buildscript {
+    // ref. https://github.com/spotbugs/spotbugs-gradle-plugin/issues/11
+    configurations.classpath {
+        exclude group:'org.slf4j', module:'slf4j-simple'
     }
-  }
 }
 
-jar {
-  baseName = myAppTitle
-  version = myAppVersion
-
-  manifest {
-    attributes(
-      'Main-Class': myAppMainClass,
-      'Implementation-Title': myAppTitle,
-      'Implementation-Version': myAppVersion)
-  }
+plugins {
+    id 'application'
+    id 'java'
+    id 'checkstyle'
+    id 'pmd'
+    id 'com.github.spotbugs' version '1.6.2'
+    id 'jacoco'
+    id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'net.ossindex.audit' version '0.3.19-beta'
+    id 'com.jfrog.bintray' version '1.8.3'
+    id 'maven-publish'
 }
 
-test {
-  maxParallelForks = 1
-  forkEvery = 100
-  minHeapSize = '128m'
-  maxHeapSize = '128m'
-  jvmArgs = ['-XX:+UseG1GC']
-}
 
-/*
- * application plugin settings
- */
-applicationName = myAppTitle
-mainClassName = myAppMainClass
-
-/*
- * fatjar plugin settings
- */
-fatJar {
-  baseName = myAppTitle
-  version myAppVersion
-  classifier 'all-in-one'
-
-  manifest {
-    attributes(
-      'Main-Class': myAppMainClass,
-      'Implementation-Title': myAppTitle,
-      'Implementation-Version': myAppVersion)
-  }
-}
-
-/*
- * checkstyle plugin settings
- */
-checkstyle {
-  configFile = file('gradle/checkstyle/sun_checks.xml')
-  toolVersion = '6.7'
-  ignoreFailures = true
-  sourceSets = [sourceSets.main]
-}
-
-/*
- * findbugs plugin settings
- */
-findbugs {
-  toolVersion = '3.0.1'
-  ignoreFailures = true
-  sourceSets = [sourceSets.main]
-}
-
-/*
- * jacoco plugin settings
- */
-jacoco {
-  toolVersion = '0.7.5.201505241946'
-}
-
-/*
- * javac encoding settings
- */
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-//tasks.withType(JavaCompile){ options.encoding = 'UTF-8' }
-
-/*
- * dependency settings
- */
 repositories {
-  jcenter()
+    jcenter()
 }
 
 dependencies {
-  compile 'org.slf4j:slf4j-api:1.7.12'
-  compile 'ch.qos.logback:logback-classic:1.1.3'
-  compile 'io.reactivex:rxjava:1.0.10'
-
-  testCompile 'junit:junit:4.12'
-  testCompile 'org.mockito:mockito-core:1.10.19'
+    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.16'
 }
 
-/*
- * task definitions
- */
-apply from: 'gradle/integrationTest.gradle'
 
-task initDirs(description: '''Creates 'java' and 'resources' directories under all sourceSets''') << {
-  sourceSets*.java.srcDirs*.each {
-    it.mkdirs()
-  }
-  sourceSets*.resources.srcDirs*.each {
-    it.mkdirs()
-  }
+archivesBaseName = artifact_name
+group = artifact_group
+version = artifact_version
+
+applicationName = application_name
+mainClassName = application_main_class_name
+
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
 }
 
-tasks.addRule('''Pattern: copyProfileResource<ProfileName>: Copies the resource files of a profile.''') {
-  taskName ->
-  def profileName = taskName.replace('copyProfileResource', '').toLowerCase()
-  if (taskName.startsWith('copyProfileResource')) {
-    task (taskName, type: Copy) {
-      from "profiles/${profileName}"
-      into sourceSets.main.output.resourcesDir
+test {
+    maxParallelForks = 1
+    forkEvery = 100
+    minHeapSize = '128m'
+    maxHeapSize = '128m'
+    jvmArgs = ['-XX:+UseG1GC']
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': application_main_class_name,
+            'Implementation-Title': artifact_name,
+            'Implementation-Version': artifact_version
+        )
     }
-  }
 }
-def activeProfileName = myActiveProfile.substring(0, 1).toUpperCase() + \
-                        myActiveProfile.substring(1).toLowerCase()
-def taskName = 'copyProfileResource' + activeProfileName
-classes.dependsOn taskName
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+javadoc.failOnError = false
+
+// https://docs.gradle.org/current/userguide/checkstyle_plugin.html
+// https://checkstyle.org
+// https://github.com/checkstyle/checkstyle
+checkstyle {
+    toolVersion = '8.10.1'
+    ignoreFailures = true
+    sourceSets = [sourceSets.main]
+}
+
+// https://docs.gradle.org/current/userguide/pmd_plugin.html
+// https://pmd.github.io
+// https://github.com/pmd/pmd
+// https://github.com/pmd/pmd/tree/pmd_releases/6.5.0/pmd-java/src/main/resources/rulesets/java
+pmd {
+    toolVersion = '6.5.0'
+    ignoreFailures = true
+    sourceSets = [sourceSets.main]
+    ruleSets = ['java-basic', 'java-braces', 'java-codesize']
+}
+
+// https://docs.gradle.org/current/userguide/findbugs_plugin.html
+// https://spotbugs.github.io
+// https://github.com/spotbugs/spotbugs
+spotbugs {
+    toolVersion = '3.1.5'
+    ignoreFailures = true
+    sourceSets = [sourceSets.main]
+}
+
+// https://docs.gradle.org/current/userguide/jacoco_plugin.html
+// https://www.jacoco.org
+// https://github.com/jacoco/jacoco
+jacoco {
+    toolVersion = '0.8.1'
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+dependencyUpdates {
+    revision = 'release'
+}
+
+// https://github.com/OSSIndex/ossindex-gradle-plugin
+audit {
+    failOnError = false
+}
+
+// https://github.com/bintray/gradle-bintray-plugin
+bintray {
+    user = bintray_username
+    key = bintray_api_key
+    publications = ['jcenterPublication']
+    dryRun = true
+    publish = true
+    override = false
+    pkg {
+        repo = 'generic'
+        name = artifact_name
+        userOrg = bintray_username
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/ohtomi/sandbox-rxjava.git'
+        version {
+            name = artifact_version
+            desc = artifact_version
+            released = new Date()
+            // attributes = ['': '']
+            // gpg {
+            //     sign = true
+            // }
+        }
+    }
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name 'MIT'
+            url 'https://ohtomi.mit-license.org'
+            distribution 'repo'
+        }
+    }
+    developers {
+        developer {
+            id developer_id
+            name developer_name
+            email developer_email
+        }
+    }
+    scm {
+       url 'https://github.com/ohtomi/sandbox-rxjava'
+    }
+}
+
+publishing {
+    publications {
+        jcenterPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId    artifact_group
+            artifactId artifact_name
+            version    artifact_version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'TODO')
+                root.appendNode('name', artifact_name)
+                root.appendNode('url', 'https://github.com/ohtomi/sandbox-rxjava')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
