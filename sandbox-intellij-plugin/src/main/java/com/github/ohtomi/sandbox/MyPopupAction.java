@@ -7,12 +7,12 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
-public class MyPopup extends AnAction {
+public class MyPopupAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(PlatformDataKeys.PROJECT);
-        MyProject service = ServiceManager.getService(project, MyProject.class);
+        MyProjectService service = ServiceManager.getService(project, MyProjectService.class);
         String message = service.getMessage();
         String title = service.getTitle();
         Messages.showInfoMessage(project, message, title);

@@ -16,13 +16,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <projectService serviceInterface="com.github.ohtomi.sandbox.MyProject"
-                        serviceImplementation="com.github.ohtomi.sandbox.impl.MyProjectImpl"/>
+        <projectService serviceInterface="com.github.ohtomi.sandbox.MyProjectService"
+                        serviceImplementation="com.github.ohtomi.sandbox.impl.MyProjectServiceImpl"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
-        <action id="MY_POPUP" class="com.github.ohtomi.sandbox.MyPopup" text="show my popup" description="my popup action">
+        <action id="MY_POPUP" class="com.github.ohtomi.sandbox.MyPopupAction" text="show my popup" description="my popup action">
             <add-to-group group-id="EditorPopupMenu1" anchor="first"/>
         </action>
     </actions>
