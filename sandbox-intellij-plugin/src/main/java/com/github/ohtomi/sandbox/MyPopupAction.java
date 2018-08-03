@@ -1,5 +1,6 @@
 package com.github.ohtomi.sandbox;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
@@ -16,5 +17,11 @@ public class MyPopupAction extends AnAction {
         String message = service.getMessage();
         String title = service.getTitle();
         Messages.showInfoMessage(project, message, title);
+    }
+
+    @Override
+    public void update(AnActionEvent e) {
+        super.update(e);
+        e.getPresentation().setIcon(AllIcons.Ide.Info_notifications);
     }
 }
