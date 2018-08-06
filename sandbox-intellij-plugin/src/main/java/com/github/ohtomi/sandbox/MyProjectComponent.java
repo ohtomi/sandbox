@@ -1,5 +1,8 @@
 package com.github.ohtomi.sandbox;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.ui.Messages;
 
@@ -10,13 +13,19 @@ public class MyProjectComponent implements ProjectComponent {
         int answer = Messages.showYesNoCancelDialog("select button", "yes/no/cancel", null);
         switch (answer) {
             case Messages.YES:
-                Messages.showInfoMessage("yes !!!", "yes/no/cancel");
+                Notifications.Bus.notify(
+                        new Notification("com.github.ohtomi.sandbox.sandbox-intellij-plugin", "yes/no/cancel", "yes !!!",
+                                NotificationType.INFORMATION));
                 break;
             case Messages.NO:
-                Messages.showInfoMessage("no ...", "yes/no/cancel");
+                Notifications.Bus.notify(
+                        new Notification("com.github.ohtomi.sandbox.sandbox-intellij-plugin", "yes/no/cancel", "no ...",
+                                NotificationType.WARNING));
                 break;
             case Messages.CANCEL:
-                Messages.showInfoMessage("cancel ???", "yes/no/cancel");
+                Notifications.Bus.notify(
+                        new Notification("com.github.ohtomi.sandbox.sandbox-intellij-plugin", "yes/no/cancel", "cancel ???",
+                                NotificationType.ERROR));
                 break;
         }
     }
