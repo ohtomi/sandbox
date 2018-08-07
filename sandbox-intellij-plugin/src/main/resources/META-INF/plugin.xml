@@ -24,6 +24,7 @@
         <!-- Add your extensions here -->
         <projectService serviceInterface="com.github.ohtomi.sandbox.MyProjectService"
                         serviceImplementation="com.github.ohtomi.sandbox.impl.MyProjectServiceImpl"/>
+        <editorTabColorProvider implementation="com.github.ohtomi.sandbox.MyEditorTabColorProvider"/>
     </extensions>
 
     <actions>
