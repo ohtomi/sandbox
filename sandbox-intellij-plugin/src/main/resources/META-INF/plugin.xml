@@ -25,6 +25,7 @@
         <projectService serviceInterface="com.github.ohtomi.sandbox.MyProjectService"
                         serviceImplementation="com.github.ohtomi.sandbox.impl.MyProjectServiceImpl"/>
         <editorTabColorProvider implementation="com.github.ohtomi.sandbox.MyEditorTabColorProvider"/>
+        <toolWindow id="MY_TOOL_WINDOW" anchor="bottom" factoryClass="com.github.ohtomi.sandbox.MyToolWindowFactory"/>
     </extensions>
 
     <actions>
