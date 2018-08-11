@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 public interface MyProjectService {
+
     static MyProjectService getInstance(@NotNull Project project) {
         System.out.println(String.format(
                 "interface: %s, project: %s", MyProjectService.class.getCanonicalName(), project.getName()));
