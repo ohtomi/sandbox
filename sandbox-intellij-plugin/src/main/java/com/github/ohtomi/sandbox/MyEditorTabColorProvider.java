@@ -26,4 +26,20 @@ public class MyEditorTabColorProvider implements EditorTabColorProvider {
                 return null;
         }
     }
+
+    @Nullable
+    @Override
+    public Color getProjectViewColor(@NotNull Project project, @NotNull VirtualFile file) {
+        System.out.println("getProjectViewColor(@NotNull Project project, @NotNull VirtualFile file)");
+        switch (file.getFileType().getDefaultExtension()) {
+            case "txt":
+                return JBColor.GREEN;
+            case "xml":
+                return JBColor.BLUE;
+            case "java":
+                return JBColor.YELLOW;
+            default:
+                return null;
+        }
+    }
 }
