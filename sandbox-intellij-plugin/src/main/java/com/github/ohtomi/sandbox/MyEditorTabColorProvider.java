@@ -15,22 +15,18 @@ public class MyEditorTabColorProvider implements EditorTabColorProvider {
     @Override
     public Color getEditorTabColor(@NotNull Project project, @NotNull VirtualFile file) {
         System.out.println("getEditorTabColor(@NotNull Project project, @NotNull VirtualFile file)");
-        switch (file.getFileType().getDefaultExtension()) {
-            case "txt":
-                return JBColor.GREEN;
-            case "xml":
-                return JBColor.BLUE;
-            case "java":
-                return JBColor.YELLOW;
-            default:
-                return null;
-        }
+        return selectBackgroundColor(project, file);
     }
 
     @Nullable
     @Override
     public Color getProjectViewColor(@NotNull Project project, @NotNull VirtualFile file) {
         System.out.println("getProjectViewColor(@NotNull Project project, @NotNull VirtualFile file)");
+        return selectBackgroundColor(project, file);
+    }
+
+    @Nullable
+    private Color selectBackgroundColor(@NotNull Project project, @NotNull VirtualFile file) {
         switch (file.getFileType().getDefaultExtension()) {
             case "txt":
                 return JBColor.GREEN;
