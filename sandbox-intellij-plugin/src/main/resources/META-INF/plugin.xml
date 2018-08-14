@@ -30,10 +30,12 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="MY_POPUP" class="com.github.ohtomi.sandbox.MyPopupAction" text="show my popup"
-                description="my popup action">
+        <group id="MY_GROUP" popup="true" text="open my group" description="my group">
+            <action id="MY_POPUP" class="com.github.ohtomi.sandbox.MyPopupAction" text="show my popup"
+                    description="my popup action">
+            </action>
             <add-to-group group-id="EditorPopupMenu1" anchor="first"/>
-        </action>
+        </group>
         <action id="MY_TOOLS" class="com.github.ohtomi.sandbox.MyToolsMenuAction" text="run ide"
                 description="my tools menu action">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
