@@ -15,6 +15,8 @@ public class MyToolsMenuAction extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         super.update(e);
+        e.getPresentation().setText("show my popup");
+        e.getPresentation().setDescription("my popup action");
         e.getPresentation().setIcon(AllIcons.Ide.HectorOff);
     }
 }
