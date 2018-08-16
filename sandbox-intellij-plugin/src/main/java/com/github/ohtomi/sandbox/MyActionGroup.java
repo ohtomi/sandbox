@@ -1,5 +1,6 @@
 package com.github.ohtomi.sandbox;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -12,5 +13,11 @@ public class MyActionGroup extends ActionGroup {
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
         return new AnAction[]{new MyToolsMenuAction()};
+    }
+
+    @Override
+    public void update(AnActionEvent e) {
+        super.update(e);
+        e.getPresentation().setIcon(AllIcons.Ide.Pipette);
     }
 }

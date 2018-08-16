@@ -9,6 +9,11 @@ import com.intellij.openapi.ui.Messages;
 public class MyProjectComponent implements ProjectComponent {
 
     @Override
+    public void initComponent() {
+        System.out.println("initComponent()");
+    }
+
+    @Override
     public void projectOpened() {
         int answer = Messages.showYesNoCancelDialog("select button", "yes/no/cancel", null);
         switch (answer) {
