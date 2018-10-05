@@ -3,9 +3,13 @@ package com.example;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.schedulers.ExecutorScheduler;
 import io.reactivex.internal.schedulers.SingleScheduler;
 import io.reactivex.subjects.ReplaySubject;
 import io.reactivex.subjects.Subject;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
 
@@ -44,12 +48,18 @@ public class Main {
     private void sample3() throws Exception {
         // Schedulerをセットする
         Scheduler scheduler1 = new SingleScheduler();
-        Scheduler scheduler2 = new SingleScheduler();
+        ExecutorService executor = Executors.newWorkStealingPool();
+        Scheduler scheduler2 = new ExecutorScheduler(executor);
         Observable<Integer> counter = Main.fromList(1, 3, 5, 7, 9);
         Disposable d = counter.subscribeOn(scheduler1)
+                .map(i -> {
+                    System.out.println("sample3() on " + Thread.currentThread().getName());
+                    return i;
+                })
                 .observeOn(scheduler2)
                 .subscribe(i -> {
-                    System.out.println("sample3() => i: " + i);
+                    System.out.println("sample3() on " + Thread.currentThread().getName() + " => i: " + i);
+                    executor.shutdown();
                     scheduler1.shutdown();
                     scheduler2.shutdown();
                 });
