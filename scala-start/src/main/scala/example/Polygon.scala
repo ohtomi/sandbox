@@ -60,7 +60,7 @@ object Polygon {
     val s = Polygon.fromEdges(List(3, 4, 5, 6))
     println(s"s.edges => ${s.asInstanceOf[Square].edges}")
 
-    val t = Polygon.fromEdges(List(3, 4, 5))
+    val _ = Polygon.fromEdges(List(3, 4, 5))
     // println(s"t.edges => ${t.asInstanceOf[Triangle].edges}")
     // value edges is not a member of example.Triangle
   }
