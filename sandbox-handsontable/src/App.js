@@ -3,49 +3,33 @@ import {HotTable} from '@handsontable/react'
 import './App.css'
 import 'handsontable/dist/handsontable.full.css'
 
-const fn = (record) => {
-    return record ? `${record.id}__${record.name}` : '(n/a)'
-}
+const a_plus_b = (record) => record.A + record.B
+const a_minus_b = (record) => record.A - record.B
+const a_multiply_b = (record) => record.A * record.B
+const a_divide_b = (record) => record.A / record.B
 
 const columns = [
-    {data: 'id', type: 'text'},
-    {data: 'name', type: 'text'},
-    {data: 'age', type: 'text'},
-    {data: 'gender', type: 'text'},
-    {data: fn, type: 'text'},
-    {data: 'registered_at', type: 'text'},
-    {data: 'registered_by', type: 'text'},
-    {data: 'modified_at', type: 'text'},
-    {data: 'modified_by', type: 'text'}
+    {data: 'ID', type: 'text'},
+    {data: 'A', type: 'numeric'},
+    {data: 'B', type: 'numeric'},
+    {data: a_plus_b, type: 'numeric'},
+    {data: a_minus_b, type: 'numeric'},
+    {data: a_multiply_b, type: 'numeric'},
+    {data: a_divide_b, type: 'numeric'}
 ]
 
-const colHeaders = ['id', 'name', 'age', 'gender', 'fn()', 'reg at', 'reg by', 'mod at', 'mod by']
+const colHeaders = ['ID', 'A', 'B', 'A + B', 'A - B', 'A * B', 'A / B']
 
 const App = () => {
     const [data, setData] = useState([
-        {id: 11111, name: 22222, age: 33333, gender: 44444},
-        {id: 11112, name: 22222, age: 33333, gender: 44444},
-        {id: 11113, name: 22222, age: 33333, gender: 44444},
-        {id: 11114, name: 22222, age: 33333, gender: 44444},
-        {id: 11115, name: 22222, age: 33333, gender: 44444},
-        {id: 11116, name: 22222, age: 33333, gender: 44444},
-        {id: 11117, name: 22222, age: 33333, gender: 44444},
-        {id: 11118, name: 22222, age: 33333, gender: 44444},
-        {id: 11119, name: 22222, age: 33333, gender: 44444},
-        {id: 11120, name: 22222, age: 33333, gender: 44444},
-        {id: 11121, name: 22222, age: 33333, gender: 44444},
-        {id: 11122, name: 22222, age: 33333, gender: 44444},
-        {id: 11123, name: 22222, age: 33333, gender: 44444},
-        {id: 11124, name: 22222, age: 33333, gender: 44444},
-        {id: 11125, name: 22222, age: 33333, gender: 44444},
-        {id: 11126, name: 22222, age: 33333, gender: 44444},
-        {id: 11127, name: 22222, age: 33333, gender: 44444},
-        {id: 11128, name: 22222, age: 33333, gender: 44444},
-        {id: 11129, name: 22222, age: 33333, gender: 44444},
-        {id: 11130, name: 22222, age: 33333, gender: 44444}
+        {ID: 20, A: 1000, B: 200},
+        {ID: 19, A: 1000, B: 200},
+        {ID: 18, A: 1000, B: 200},
+        {ID: 17, A: 1000, B: 200},
+        {ID: 16, A: 1000, B: 200}
     ])
     const onClick = (ev) => {
-        const newData = data.map((d) => Object.assign(d, {age: d.age + 1}))
+        const newData = data.map((d) => Object.assign(d, {ext1: '', ext2: '', ext3: '', ext4: ''}))
         setData(newData)
     }
 
@@ -73,6 +57,7 @@ const App = () => {
                 columns={columns}
                 data={data}
                 columnSorting={true}
+                manualColumnMove={true}
                 afterLoadData={afterLoadData}
             />
             <hr/>
