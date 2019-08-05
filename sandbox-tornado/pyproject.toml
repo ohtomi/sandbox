@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sandbox-tornado"
+version = "0.1.0"
+description = ""
+authors = ["Kenichi Ohtomi <ohtomi.kenichi@gmail.com>"]
+
+[tool.poetry.scripts]
+start = "sandbox_tornado.app:main"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+tornado = "^6.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
