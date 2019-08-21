@@ -1,8 +1,23 @@
 [tool.poetry]
 name = "sandbox-tornado"
 version = "0.1.0"
-description = ""
+description = "tornado based application"
+readme = "README.rst"
+include = ["CHANGELOG.rst"]
 authors = ["Kenichi Ohtomi <ohtomi.kenichi@gmail.com>"]
+homepage = "https://github.com/ohtomi"
+repository = "https://github.com/ohtomi/xxx"
+documentation = "https://xxx.readthedocs.io/en/latest/"
+license = "MIT"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    'Programming Language :: Python :: 3',
+    "Programming Language :: Python :: 3.7",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+]
 
 [tool.poetry.scripts]
 start = "sandbox_tornado.app:main"
