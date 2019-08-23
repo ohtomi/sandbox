@@ -1,0 +1,6 @@
+{
+    "restructuredtext.confPath": "",
+    "python.pythonPath": "python3",
+    "restructuredtext.preview.docutil.disabled": true,
+    "restructuredtext.linter.disabled": true
+}
